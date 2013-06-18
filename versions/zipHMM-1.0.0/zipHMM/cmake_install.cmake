@@ -1,4 +1,4 @@
-# Install script for directory: /Users/asand/Desktop/zip/zipHMM
+# Install script for directory: /Users/asand/Desktop/zip/versions/zipHMM-1.0.0/zipHMM
 
 # Set the install prefix
 IF(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -28,7 +28,7 @@ IF(NOT CMAKE_INSTALL_COMPONENT)
 ENDIF(NOT CMAKE_INSTALL_COMPONENT)
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "/Users/asand/Desktop/zip/zipHMM/libzipHMM.a")
+  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib" TYPE STATIC_LIBRARY FILES "/Users/asand/Desktop/zip/versions/zipHMM-1.0.0/zipHMM/libzipHMM.a")
   IF(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libzipHMM.a" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libzipHMM.a")
     EXECUTE_PROCESS(COMMAND "/usr/bin/ranlib" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/libzipHMM.a")
@@ -37,26 +37,26 @@ ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unsp
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
   FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/include/zipHMM" TYPE FILE FILES
-    "/Users/asand/Desktop/zip/zipHMM/calibrate.hpp"
-    "/Users/asand/Desktop/zip/zipHMM/debug.hpp"
-    "/Users/asand/Desktop/zip/zipHMM/forwarder.hpp"
-    "/Users/asand/Desktop/zip/zipHMM/hmm_io.hpp"
-    "/Users/asand/Desktop/zip/zipHMM/hmm_utils.hpp"
-    "/Users/asand/Desktop/zip/zipHMM/io_utils.hpp"
-    "/Users/asand/Desktop/zip/zipHMM/matrix.hpp"
-    "/Users/asand/Desktop/zip/zipHMM/performance_description.hpp"
-    "/Users/asand/Desktop/zip/zipHMM/posterior_decoding.hpp"
-    "/Users/asand/Desktop/zip/zipHMM/prob_spaces.hpp"
-    "/Users/asand/Desktop/zip/zipHMM/ProcessingDevice.hpp"
-    "/Users/asand/Desktop/zip/zipHMM/PThreadProcessingDevice.hpp"
-    "/Users/asand/Desktop/zip/zipHMM/seq_io.hpp"
-    "/Users/asand/Desktop/zip/zipHMM/simple_forwarder.hpp"
-    "/Users/asand/Desktop/zip/zipHMM/simple_stop_forwarder.hpp"
-    "/Users/asand/Desktop/zip/zipHMM/Stage1JobControl.hpp"
-    "/Users/asand/Desktop/zip/zipHMM/Stage2JobControl.hpp"
-    "/Users/asand/Desktop/zip/zipHMM/test_utils.hpp"
-    "/Users/asand/Desktop/zip/zipHMM/timer.hpp"
-    "/Users/asand/Desktop/zip/zipHMM/ViterbiJobControl.hpp"
+    "/Users/asand/Desktop/zip/versions/zipHMM-1.0.0/zipHMM/calibrate.hpp"
+    "/Users/asand/Desktop/zip/versions/zipHMM-1.0.0/zipHMM/debug.hpp"
+    "/Users/asand/Desktop/zip/versions/zipHMM-1.0.0/zipHMM/forwarder.hpp"
+    "/Users/asand/Desktop/zip/versions/zipHMM-1.0.0/zipHMM/hmm_io.hpp"
+    "/Users/asand/Desktop/zip/versions/zipHMM-1.0.0/zipHMM/hmm_utils.hpp"
+    "/Users/asand/Desktop/zip/versions/zipHMM-1.0.0/zipHMM/io_utils.hpp"
+    "/Users/asand/Desktop/zip/versions/zipHMM-1.0.0/zipHMM/matrix.hpp"
+    "/Users/asand/Desktop/zip/versions/zipHMM-1.0.0/zipHMM/performance_description.hpp"
+    "/Users/asand/Desktop/zip/versions/zipHMM-1.0.0/zipHMM/posterior_decoding.hpp"
+    "/Users/asand/Desktop/zip/versions/zipHMM-1.0.0/zipHMM/prob_spaces.hpp"
+    "/Users/asand/Desktop/zip/versions/zipHMM-1.0.0/zipHMM/ProcessingDevice.hpp"
+    "/Users/asand/Desktop/zip/versions/zipHMM-1.0.0/zipHMM/PThreadProcessingDevice.hpp"
+    "/Users/asand/Desktop/zip/versions/zipHMM-1.0.0/zipHMM/seq_io.hpp"
+    "/Users/asand/Desktop/zip/versions/zipHMM-1.0.0/zipHMM/simple_forwarder.hpp"
+    "/Users/asand/Desktop/zip/versions/zipHMM-1.0.0/zipHMM/simple_stop_forwarder.hpp"
+    "/Users/asand/Desktop/zip/versions/zipHMM-1.0.0/zipHMM/Stage1JobControl.hpp"
+    "/Users/asand/Desktop/zip/versions/zipHMM-1.0.0/zipHMM/Stage2JobControl.hpp"
+    "/Users/asand/Desktop/zip/versions/zipHMM-1.0.0/zipHMM/test_utils.hpp"
+    "/Users/asand/Desktop/zip/versions/zipHMM-1.0.0/zipHMM/timer.hpp"
+    "/Users/asand/Desktop/zip/versions/zipHMM-1.0.0/zipHMM/ViterbiJobControl.hpp"
     )
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
@@ -69,7 +69,7 @@ IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspeci
   IF (CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   ENDIF (CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
-FILE(INSTALL DESTINATION "/Library/Frameworks/EPD64.framework/Versions/7.3/lib/python2.7/site-packages" TYPE SHARED_LIBRARY FILES "/Users/asand/Desktop/zip/zipHMM/libpyZipHMM.so")
+FILE(INSTALL DESTINATION "/Library/Frameworks/EPD64.framework/Versions/7.3/lib/python2.7/site-packages" TYPE SHARED_LIBRARY FILES "/Users/asand/Desktop/zip/versions/zipHMM-1.0.0/zipHMM/libpyZipHMM.so")
   IF(EXISTS "$ENV{DESTDIR}/Library/Frameworks/EPD64.framework/Versions/7.3/lib/python2.7/site-packages/libpyZipHMM.so" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}/Library/Frameworks/EPD64.framework/Versions/7.3/lib/python2.7/site-packages/libpyZipHMM.so")
     EXECUTE_PROCESS(COMMAND "/usr/bin/install_name_tool"
@@ -90,11 +90,11 @@ IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspeci
   IF (CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   ENDIF (CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
-FILE(INSTALL DESTINATION "/Library/Frameworks/EPD64.framework/Versions/7.3/lib/python2.7/site-packages" TYPE FILE FILES "/Users/asand/Desktop/zip/zipHMM/pyZipHMM.py")
+FILE(INSTALL DESTINATION "/Library/Frameworks/EPD64.framework/Versions/7.3/lib/python2.7/site-packages" TYPE FILE FILES "/Users/asand/Desktop/zip/versions/zipHMM-1.0.0/zipHMM/pyZipHMM.py")
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/Users/asand/Desktop/zip/bin/build_forwarder")
+  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/Users/asand/Desktop/zip/versions/zipHMM-1.0.0/bin/build_forwarder")
   IF(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/build_forwarder" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/build_forwarder")
     IF(CMAKE_INSTALL_DO_STRIP)
@@ -104,7 +104,7 @@ IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspeci
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/Users/asand/Desktop/zip/bin/forward")
+  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/Users/asand/Desktop/zip/versions/zipHMM-1.0.0/bin/forward")
   IF(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/forward" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/forward")
     IF(CMAKE_INSTALL_DO_STRIP)
@@ -114,7 +114,7 @@ IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspeci
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/Users/asand/Desktop/zip/bin/calibrate")
+  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/Users/asand/Desktop/zip/versions/zipHMM-1.0.0/bin/calibrate")
   IF(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/calibrate" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/calibrate")
     IF(CMAKE_INSTALL_DO_STRIP)
@@ -124,7 +124,7 @@ IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspeci
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/Users/asand/Desktop/zip/bin/generate_hmm")
+  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/Users/asand/Desktop/zip/versions/zipHMM-1.0.0/bin/generate_hmm")
   IF(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/generate_hmm" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/generate_hmm")
     IF(CMAKE_INSTALL_DO_STRIP)
@@ -134,7 +134,7 @@ IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspeci
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/Users/asand/Desktop/zip/bin/generate_seq")
+  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "/Users/asand/Desktop/zip/versions/zipHMM-1.0.0/bin/generate_seq")
   IF(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/generate_seq" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/generate_seq")
     IF(CMAKE_INSTALL_DO_STRIP)
