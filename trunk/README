@@ -18,13 +18,15 @@
 
 ############### Build procedure: ############### 
 
-To build the library, unzip the directory and perform the following in a terminal
+To build and install the library, unzip the directory and execute the
+following commands in a terminal:
 
 $ cd <path to library>/zipHMM-0.0.1/
-$ zipHMM-0.0.1 $ cmake .
-$ zipHMM-0.0.1 $ make
-$ zipHMM-0.0.1 $ bin/calibrate
-$ zipHMM-0.0.1 $ make test
+zipHMM-0.0.1 $ cmake .
+zipHMM-0.0.1 $ make
+zipHMM-0.0.1 $ bin/calibrate
+zipHMM-0.0.1 $ make test
+zipHMM-0.0.1 $ make install
 
 To build in OS X, the Accellerate framework is required (see
 https://developer.apple.com/performance/accelerateframework.html). This
@@ -64,58 +66,72 @@ The main class in the library is Forwarder (forwarder.hpp and
 forwarder.cpp). Objects of this class represents an observed sequence
 that have been preprocessed such that the likelihood of the sequence
 can be obtained from a given HMM (pi, A, B) very fast. To build a new
-forwarder object, one of the following constructors can be used:
+forwarder object just call the empty constructor:
 
-Forwarder(const std::string &seq_filename, const size_t alphabet_size, std::vector<size_t> &nStatesSave);
-Forwarder(const std::string &seq_filename, const size_t alphabet_size, const size_t no_states);
+Forwarder();
+
+and to read in a sequence call one of the two read_seq methods:
+
+void Forwarder::read_seq(const std::string &seq_filename, const size_t alphabet_size, 
+                         std::vector<size_t> nStatesSave, const size_t min_no_eval = 1);
+void Forwarder::read_seq(const std::string &seq_filename, const size_t alphabet_size, 
+     			 const size_t no_states, const size_t min_no_eval);
+void Forwarder::read_seq(const std::string &seq_filename, const size_t alphabet_size, 
+                         const size_t min_no_eval = 1)
+
 
 Here seq_filename is the filename of the file containing the observed
 sequence, alphabet_size is the size of the alphabet used in the
-observed sequence, and nStatesSave is a vector indicating the sizes of
-the HMMs the user intends to run the Forwarder object on. If
+observed sequence, nStatesSave is a vector indicating the sizes of the
+HMMs the user intends to run the Forwarder object on, and min_no_eval
+is a guess of the number of times, the preprocessing will be reused
+(if unsure about this then leave it out and use the default value). If
 nStatesSave contains the vector (2, 4, 8), datastructures obtaining
 the fastest evaluation of the forward algorithm for each of the HMM
-state space sizes 2, 4, and 8 will be saved. If nStatesSave is left
+state space sizes 2, 4, and 8 will be build. If nStatesSave is left
 empty a single datastructure obtaining a very fast evaluation of the
-forward algorithm for all HMM state space sizes will be saved. For now
-we suggest you leave nStatesSave empty.
+forward algorithm for all HMM state space sizes will be saved.
 
 The second constructor serves as a convenient way to call the first
 constructor with only one HMM size in nStatesSave.
+The third constructor serves as a convenient way to call the first 
+constructor with an empty nStates2save vector.
 
 After building an Forwarder object, it can be saved to disk using the method
 
-void print_to_directory(const std::string &directory) const;
+void write_to_directory(const std::string &directory) const;
 
 Here directory should contain the path (relative to the root of the
 library) of the intended location of the datastructure.
 
-To read a previously saved datastructure, one of the following two constructors are used:
+To read a previously saved datastructure, one of the following two methods 
+can be used:
 
-Forwarder(const std::string &directory);
-Forwarder(const std::string &directory, const size_t no_states);
+void Forwarder::read_from_directory(const std::string &dirname);
+void Forwarder::read_from_directory(const std::string &directory, const size_t no_states);
 
-Using the first one, the entire datastructure is been rebuild. Using
+Using the first one, the entire datastructure is being rebuilt. Using
 the second one only the datastructure matching no_states is being
-rebuild. This will be faster in many cases. If you did no save the
+rebuild. This will be faster in many cases. If you did not save the
 datastructure for the size of your HMM, then use the first
 constructor. The forward algorithm will figure out which of the saved
-compressed sequences is most optimal for your HMM.
+data structures is most optimal for your HMM.
 
 Finally, to get the loglikelihood of the observed sequence in a
 specific model, one of the following methods are used:
 
-double forward(const Matrix &pi, const Matrix &A, const Matrix &B) const;
-double pthread_forward(const Matrix &pi, const Matrix &A, const Matrix &B, const std::string &device_filename = DEFAULT_DEVICE_FILENAME) const;
+double Forwarder::forward(const Matrix &pi, const Matrix &A, const Matrix &B) const;
+double Forwarder::pthread_forward(const Matrix &pi, const Matrix &A, const Matrix &B, 
+                                  const std::string &device_filename = DEFAULT_DEVICE_FILENAME) const;
 
 The second method is a parallelized version of the forward algorithm,
-whereas the first one is non-parallelized. pi, A and B specifies the
+whereas the first one is single-threaded. pi, A and B specifies the
 HMM parameters. They can either be read from a file or build in C++ as
-described below in the section Encoding HMMs. The parallelized version
+described below in the section 'Encoding HMMs'. The parallelized version
 takes an additional filename as parameter. This filename should be the
 path to the file created by the calibrate program, which finds the
 optimal number of threads to use in the parallelized forward
-algorithm. The default filename is .ziphmm.devices. If you did not
+algorithm. The default filename is ~/.ziphmm.devices. If you did not
 move the file, then leave the device_filename parameter out.
 
 See zipHMM/cpp_example.cpp for a simple example.
@@ -272,25 +288,24 @@ bin/build_forwarder -s example.seq -M 3 -o example_out -N 2 -N 4 -N 8 -N 16
 
 ## forward
 
-Usage: bin/forward (-s <sequence filename> -m <HMM filename> [-o <output directory>] ) | (-d <preprocessing directory> -m <HMM filename>) [-p]
+Usage: bin/forward (-s <sequence filename> -m <HMM filename> [-e #expected forward calls] [-o <output directory>] ) | (-d <preprocessing directory> -m <HMM filename>) [-p]
 
 Runs the forward algorithm and outputs the loglikelhood. This
 executable can be called in two different ways:
 
-bin/forward -s example.seq -m example.hmm
+bin/forward -s example.seq -m example.hmm -e 500 -o example_out
 bin/forward -d example_out/ -m example.hmm
 
 In the first example the loglikelihood is evaluated based on the
-observed sequence in example.seq and the HMM specified in example.hmm.
-In the second example the loglikelihood is evaluated based on the
-previously saved data structure in example_out/ and the HMM specified
-in example.hmm. 
-In both cases the -p parameter can be used to use the
-parallelized version.
-In the first example the user can optionally
-choose to save the data structure in eg. example_out/ using the -o parameter:
+observed sequence in example.seq and the HMM specified in
+example.hmm. In the second example the loglikelihood is evaluated
+based on the previously saved data structure in example_out/ and the
+HMM specified in example.hmm. In both cases the -p parameter can be
+used to use the parallelized version. In the first example the user
+can optionally choose to save the data structure in eg. example_out/
+using the -o parameter:
 
-bin/forward -s example.seq -m example.hmm -o example_out/
+bin/forward -s example.seq -m example.hmm -e 500 -o example_out/
 
 ## generate_hmm
 
