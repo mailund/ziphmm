@@ -1,0 +1,4 @@
+nDeviceKinds 1
+  device PThreadProcessingDevice
+    algorithm likelihood
+      nDevices 16
