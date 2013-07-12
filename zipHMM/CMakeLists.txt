@@ -51,6 +51,7 @@ add_library(pyZipHMM
   performance_description.cpp
   Stage1JobControl.cpp
   posterior_decoding.cpp
+  viterbi.cpp
   debug.cpp
   )
 set_target_properties(pyZipHMM PROPERTIES OUTPUT_NAME libpyZipHMM PREFIX "" SUFFIX .so)
@@ -164,6 +165,7 @@ add_executable(cpp_example cpp_example.cpp
   performance_description.cpp
   Stage1JobControl.cpp
   posterior_decoding.cpp
+  viterbi.cpp
   debug.cpp
 )
 if(UNIX AND NOT APPLE)

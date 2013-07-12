@@ -19,6 +19,12 @@ for r in xrange(pdTable.getHeight()):
         print ("%.5f" % pdTable[r,c]), "\t",
     print
 
+
+viterbiPath, viterbi_ll  = viterbi("../example.seq", pi, A, B)
+print "viterbi log likelihood:", viterbi_ll
+print "viterbi path[0:10]:", viterbiPath[0:10]
+
+
 ## pi, A and B can also be created using
 # pi = Matrix(nStates, 0)
 # pi[0,0] = 0.5

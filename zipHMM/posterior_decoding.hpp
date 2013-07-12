@@ -7,31 +7,31 @@
 
 namespace zipHMM {
   
-  void posterior_decoding(std::vector<unsigned> &pd_path,
-			  Matrix &pd_table,
+  void posterior_decoding(const std::vector<unsigned> &seq,
 			  const Matrix &pi,
 			  const Matrix &A,
 			  const Matrix &B,
-			  const std::vector<unsigned> &seq);
+			  std::vector<unsigned> &pd_path,
+			  Matrix &pd_table);
 
-  void posterior_decoding(std::vector<unsigned> &pd_path,
-			  Matrix &pd_table,
+  void posterior_decoding(const std::string &seq_filename,
 			  const Matrix &pi,
 			  const Matrix &A,
 			  const Matrix &B,
-			  const std::string &seq_filename);
+			  std::vector<unsigned> &pd_path,
+			  Matrix &pd_table);
 
-  void posterior_decoding(Matrix &pd_table,
-			    const Matrix &initProbs,
-			    const Matrix &transProbs,
-			    const Matrix &emProbs,
-			    const std::vector<unsigned> &seq);
+  void posterior_decoding(const std::vector<unsigned> &seq,
+			  const Matrix &initProbs,
+			  const Matrix &transProbs,
+			  const Matrix &emProbs,
+			  Matrix &pd_table);
 
-  void posterior_decoding(Matrix &pd_table,
+  void posterior_decoding(const std::string &seq_filename,
 			  const Matrix &pi,
 			  const Matrix &A,
 			  const Matrix &B,
-			  const std::string &seq_filename);
+			  Matrix &pd_table);
 
 }
 

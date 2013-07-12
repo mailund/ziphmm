@@ -284,6 +284,14 @@ def posteriorDecoding(seqFilename, pi, A, B):
     pdPath = Sequence()
     lib.c_posterior_decoding(pdPath.obj, pdTable.obj, pi.obj, A.obj, B.obj, c_char_p(seqFilename))
     return pdPath, pdTable
+
+## Viterbi
+lib.c_viterbi.restype = c_double
+
+def viterbi(seqFilename, pi, A, B):
+    viterbiPath = Sequence()
+    viterbi_ll = lib.c_viterbi(viterbiPath.obj, pi.obj, A.obj, B.obj, c_char_p(seqFilename))
+    return viterbiPath, viterbi_ll
         
 
 if __name__ == "__main__":
