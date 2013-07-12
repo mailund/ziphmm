@@ -105,6 +105,28 @@ class TestSequenceFunctions(unittest.TestCase):
     
         log.debug("ok.\n")
 
+    def test_biterbi(self):
+        log = logging.getLogger( "python_test")
+        log.debug("Testing test_viterbi: ")
+
+
+        pi, A, B = readHMM("../test_data/test1.hmm")
+        viterbiPath, viterbi_ll = viterbi("../test_data/test1.seq", pi, A, B)
+
+        self.assertAlmostEqual(viterbi_ll,  -15.4332, delta = 0.0001)
+        self.assertEqual(viterbiPath[1], 1)
+        self.assertEqual(viterbiPath[-1], 1)
+
+        pi, A, B = readHMM("../test_data/test4.hmm")
+        viterbiPath, viterbi_ll = viterbi("../test_data/test4.seq", pi, A, B)
+
+        self.assertAlmostEqual(viterbi_ll,  -24.7258, delta = 0.0001)
+        self.assertEqual(viterbiPath[1], 1)
+        self.assertEqual(viterbiPath[-1], 3)
+
+        log.debug("ok.\n")
+        
+
 if __name__ == "__main__":
     logging.basicConfig( stream=sys.stderr )
     logging.getLogger( "python_test").setLevel( logging.DEBUG )
