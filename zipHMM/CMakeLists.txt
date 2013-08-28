@@ -19,7 +19,7 @@ ELSE(UNIX AND NOT APPLE)
 ENDIF(UNIX AND NOT APPLE)
 
 ## COMPILER FLAGS
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wconversion -O3 -g ${CMAKE_THREAD_LIBS_INIT}") # remove -g !!
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wconversion -O3 ${CMAKE_THREAD_LIBS_INIT}") # remove -g !!
 message("-- CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 
 ## C++ library
@@ -77,7 +77,7 @@ add_executable(build_forwarder build_forwarder.cpp
   debug.cpp
   )
 if(UNIX AND NOT APPLE)
-  target_link_libraries(build_forwarder cblas atlas)
+  target_link_libraries(build_forwarder rt cblas atlas)
 endif(UNIX AND NOT APPLE)
 
 add_executable(forward forward.cpp 
@@ -94,7 +94,7 @@ add_executable(forward forward.cpp
   debug.cpp
   )
 if(UNIX AND NOT APPLE)
-  target_link_libraries(forward cblas atlas)
+  target_link_libraries(forward rt cblas atlas)
 endif(UNIX AND NOT APPLE)
 
 # add_executable(viterbi viterbi_main.cpp 
@@ -169,7 +169,7 @@ add_executable(cpp_example cpp_example.cpp
   debug.cpp
 )
 if(UNIX AND NOT APPLE)
-  target_link_libraries(cpp_example cblas atlas)
+  target_link_libraries(cpp_example rt cblas atlas)
 endif(UNIX AND NOT APPLE)
 
 ## TESTS
@@ -184,7 +184,7 @@ add_executable(test_device_io test_device_io.cpp
   debug.cpp
   )
 if(UNIX AND NOT APPLE)
-  target_link_libraries(test_device_io cblas atlas)
+  target_link_libraries(test_device_io rt cblas atlas)
 endif(UNIX AND NOT APPLE)
 
 add_test(
