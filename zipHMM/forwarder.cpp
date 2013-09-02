@@ -199,6 +199,18 @@ namespace zipHMM {
   }
 
   double Forwarder::forward(const Matrix &pi, const Matrix &A, const Matrix &B) const {
+    if(pi.get_width() != 1 || pi.get_height() != A.get_width() || A.get_height() != A.get_width() ||
+       B.get_height() != A.get_width() || B.get_width() != orig_alphabet_size) {
+      std::cerr << "Dimensions of input matrices do not match:" << std::endl;
+      std::cerr << "\t" << "pi width:  " << pi.get_width()  << std::endl;
+      std::cerr << "\t" << "pi height: " << pi.get_height() << std::endl;
+      std::cerr << "\t" << "A width:  "  << A.get_width()   << std::endl;
+      std::cerr << "\t" << "A height: "  << A.get_height()  << std::endl;
+      std::cerr << "\t" << "B width:  "  << B.get_width()   << std::endl;
+      std::cerr << "\t" << "B height: "  << B.get_height()  << std::endl;
+      std::exit(-1);
+    }
+
     const std::vector<unsigned> *seq = 0;
     std::deque<double> scales;
     double *symbol2scale;
@@ -251,6 +263,18 @@ namespace zipHMM {
   }
 
   double Forwarder::pthread_forward(const Matrix &pi, const Matrix &A, const Matrix &B, const DeviceDescriptor &device_descriptor) const {
+    if(pi.get_width() != 1 || pi.get_height() != A.get_width() || A.get_height() != A.get_width() ||
+       B.get_height() != A.get_width() || B.get_width() != orig_alphabet_size) {
+      std::cerr << "Dimensions of input matrices do not match:" << std::endl;
+      std::cerr << "\t" << "pi width:  " << pi.get_width()  << std::endl;
+      std::cerr << "\t" << "pi height: " << pi.get_height() << std::endl;
+      std::cerr << "\t" << "A width:  "  << A.get_width()   << std::endl;
+      std::cerr << "\t" << "A height: "  << A.get_height()  << std::endl;
+      std::cerr << "\t" << "B width:  "  << B.get_width()   << std::endl;
+      std::cerr << "\t" << "B height: "  << B.get_height()  << std::endl;
+      std::exit(-1);
+    }
+
     const std::vector<unsigned> *seq = 0;
     std::deque<double> scales;
     double *symbol2scale;
@@ -333,6 +357,18 @@ namespace zipHMM {
   }
 
   double Forwarder::pthread_forward_par_stage1(const Matrix &pi, const Matrix &A, const Matrix &B, const DeviceDescriptor &device_descriptor) const {
+    if(pi.get_width() != 1 || pi.get_height() != A.get_width() || A.get_height() != A.get_width() ||
+       B.get_height() != A.get_width() || B.get_width() != orig_alphabet_size) {
+      std::cerr << "Dimensions of input matrices do not match:" << std::endl;
+      std::cerr << "\t" << "pi width:  " << pi.get_width()  << std::endl;
+      std::cerr << "\t" << "pi height: " << pi.get_height() << std::endl;
+      std::cerr << "\t" << "A width:  "  << A.get_width()   << std::endl;
+      std::cerr << "\t" << "A height: "  << A.get_height()  << std::endl;
+      std::cerr << "\t" << "B width:  "  << B.get_width()   << std::endl;
+      std::cerr << "\t" << "B height: "  << B.get_height()  << std::endl;
+      std::exit(-1);
+    }
+
     const std::vector<unsigned> *seq = 0;
     std::deque<double> scales;
     std::vector<ProcessingDevice*> devices;
