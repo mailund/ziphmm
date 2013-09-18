@@ -4,6 +4,7 @@
 #include "matrix.hpp"
 #include "hmm_io.hpp"
 #include "posterior_decoding.hpp"
+#include "viterbi.hpp"
 
 #include <iostream>
 #include <vector>
@@ -260,18 +261,34 @@ extern "C" {
   int c_posterior_decoding(void *pd_path_vptr, void *pd_table_vptr,
 			   void *pi_vptr, void *A_vptr, void *B_vptr,
 			   const char *seq_filename) {
-    std::cout << "in c_posterior_decoding" << std::endl;
     std::vector<unsigned> *pd_path_ptr = reinterpret_cast<std::vector<unsigned> *>(pd_path_vptr);
     zipHMM::Matrix *pd_table_ptr = reinterpret_cast<zipHMM::Matrix *>(pd_table_vptr);
     zipHMM::Matrix *pi_ptr = reinterpret_cast<zipHMM::Matrix *>(pi_vptr);
     zipHMM::Matrix *A_ptr = reinterpret_cast<zipHMM::Matrix *>(A_vptr);
     zipHMM::Matrix *B_ptr = reinterpret_cast<zipHMM::Matrix *>(B_vptr);
-    std::cout << "calling posterior_decoding" << std::endl;
-    zipHMM::posterior_decoding(*pd_path_ptr, *pd_table_ptr, *pi_ptr, *A_ptr, *B_ptr, seq_filename);
-    std::cout << "returned from posterior_decoding" << std::endl;
+    
+    zipHMM::posterior_decoding(seq_filename, *pi_ptr, *A_ptr, *B_ptr, *pd_path_ptr, *pd_table_ptr);
+    
     return 1;
   }
 }
+
+// Viterbi
+extern "C" {
+  double c_viterbi(void *viterbi_path_vptr,
+		   void *pi_vptr, void *A_vptr, void *B_vptr,
+		   const char *seq_filename) {
+    std::vector<unsigned> *viterbi_path_ptr = reinterpret_cast<std::vector<unsigned> *>(viterbi_path_vptr);
+    zipHMM::Matrix *pi_ptr = reinterpret_cast<zipHMM::Matrix *>(pi_vptr);
+    zipHMM::Matrix *A_ptr = reinterpret_cast<zipHMM::Matrix *>(A_vptr);
+    zipHMM::Matrix *B_ptr = reinterpret_cast<zipHMM::Matrix *>(B_vptr);
+    
+    double viterbi_ll = zipHMM::viterbi(seq_filename, *pi_ptr, *A_ptr, *B_ptr, *viterbi_path_ptr);
+    
+    return viterbi_ll;
+  }
+}
+
 
 
 // Sequence

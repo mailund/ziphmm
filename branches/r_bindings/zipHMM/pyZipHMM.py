@@ -280,13 +280,18 @@ class Matrix(object):
 
 ## posterior decoding
 def posteriorDecoding(seqFilename, pi, A, B):
-    print "in posterior decoding"
     pdTable = Matrix()
     pdPath = Sequence()
-    print "calling posterior decoding"
     lib.c_posterior_decoding(pdPath.obj, pdTable.obj, pi.obj, A.obj, B.obj, c_char_p(seqFilename))
-    print "returned from posterior decoding"
     return pdPath, pdTable
+
+## Viterbi
+lib.c_viterbi.restype = c_double
+
+def viterbi(seqFilename, pi, A, B):
+    viterbiPath = Sequence()
+    viterbi_ll = lib.c_viterbi(viterbiPath.obj, pi.obj, A.obj, B.obj, c_char_p(seqFilename))
+    return viterbiPath, viterbi_ll
         
 
 if __name__ == "__main__":

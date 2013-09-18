@@ -3,6 +3,7 @@
 #include "matrix.hpp"
 // #include "viterbi.hpp"
 #include "posterior_decoding.hpp"
+#include "viterbi.hpp"
 
 #include <iostream>
 #include <vector>
@@ -49,7 +50,7 @@ int main(int argc, char **args) {
   // 
   std::vector<unsigned> pd_path;
   Matrix pd_table;
-  posterior_decoding(pd_path, pd_table, pi, A, B, "example.seq");
+  posterior_decoding("example.seq", pi, A, B, pd_path, pd_table);
   std::cout << "posterior path[0:10]: ";
   for(size_t i = 0; i < 10; ++i)
     std::cout << pd_path[i] << " ";
@@ -62,6 +63,14 @@ int main(int argc, char **args) {
   //   std::cout << std::endl;
   // }
 
+  
+  std::vector<unsigned> viterbi_path;
+  double viterbi_ll = viterbi("example.seq", pi, A, B, viterbi_path);
+  std::cout << "viterbi loglikelihood:\t" << viterbi_ll << std::endl;
+  std::cout << "viterbi path[0:10]: ";
+  for(size_t i = 0; i < 10; ++i)
+    std::cout << viterbi_path[i] << " ";
+  std::cout << std::endl;
 
   return 0;
 

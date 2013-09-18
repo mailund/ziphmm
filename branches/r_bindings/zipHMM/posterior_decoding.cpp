@@ -74,17 +74,17 @@ namespace zipHMM {
     }
   }
 
-  void posterior_decoding(std::vector<unsigned> &pd_path,
-			  Matrix &pd_table,
+  void posterior_decoding(const std::vector<unsigned> &seq,
 			  const Matrix &pi,
 			  const Matrix &A,
 			  const Matrix &B,
-			  const std::vector<unsigned> &seq) {
+			  std::vector<unsigned> &pd_path,
+			  Matrix &pd_table) {
     
     size_t no_states = A.get_height();
     size_t length = seq.size();
     
-    posterior_decoding(pd_table, pi, A, B, seq);
+    posterior_decoding(seq, pi, A, B, pd_table);
 
     pd_path.resize(length);
     for(size_t c = 0; c < length; ++c) {
@@ -98,26 +98,23 @@ namespace zipHMM {
     }
   }
 
-  void posterior_decoding(std::vector<unsigned> &pd_path,
-			  Matrix &pd_table,
+  void posterior_decoding(const std::string &seq_filename,
 			  const Matrix &pi,
 			  const Matrix &A,
 			  const Matrix &B,
-			  const std::string &seq_filename) {
-    std::cout << "reading sequence" << std::endl;
+			  std::vector<unsigned> &pd_path,
+			  Matrix &pd_table) {
+
     std::vector<unsigned> seq;
     readSeq(seq, seq_filename);
-    std::cout << "finished reading sequence" << std::endl;
-    std::cout << "running posterior decoding" << std::endl;
-    posterior_decoding(pd_path, pd_table, pi, A, B, seq);
-    std::cout << "finished running posterior decoding" << std::endl;
+    posterior_decoding(seq, pi, A, B, pd_path, pd_table);
   }
 
-  void posterior_decoding(Matrix &pd_table,
+  void posterior_decoding(const std::vector<unsigned> &seq,
 			  const Matrix &pi,
 			  const Matrix &A,
 			  const Matrix &B,
-			  const std::vector<unsigned> &seq) {
+			  Matrix &pd_table) {
     
     Matrix forward_table, backward_table;
     std::vector<double> scales;
@@ -136,15 +133,15 @@ namespace zipHMM {
     }
   }
 
-  void posterior_decoding(Matrix &pd_table,
+  void posterior_decoding(const std::string &seq_filename,
 			  const Matrix &pi,
 			  const Matrix &A,
 			  const Matrix &B,
-			  const std::string &seq_filename) {
+			  Matrix &pd_table) {
 
     std::vector<unsigned> seq;
     readSeq(seq, seq_filename);
-    posterior_decoding(pd_table, pi, A, B, seq);
+    posterior_decoding(seq, pi, A, B, pd_table);
   }
 
 } // namespace
