@@ -15,18 +15,19 @@
 ### forward
 ### generate_hmm
 ### generate_seq
+# Contact
 
 ############### Build procedure: ############### 
 
 To build and install the library, unzip the directory and execute the
 following commands in a terminal:
 
-$ cd <path to library>/zipHMM-0.0.1/
-zipHMM-0.0.1 $ cmake .
-zipHMM-0.0.1 $ make
-zipHMM-0.0.1 $ bin/calibrate
-zipHMM-0.0.1 $ make test
-zipHMM-0.0.1 $ make install
+$ cd <path to library>/zipHMM-1.0.1/
+zipHMM-1.0.1 $ cmake .
+zipHMM-1.0.1 $ make
+zipHMM-1.0.1 $ bin/calibrate
+zipHMM-1.0.1 $ make test
+zipHMM-1.0.1 $ make install
 
 To build in OS X, the Accellerate framework is required (see
 https://developer.apple.com/performance/accelerateframework.html). This
@@ -322,3 +323,10 @@ Given an HMM specified in <HMM filename>, runs the HMM for <length>
 iterations and saves the resulting sequence of observables to
 <observed sequence output filename> and the resulting sequence of
 hidden states to <state sequence output filename>.
+
+################## Contact #####################
+
+If you encounter any problems or have questions about using this
+software, please contact 
+
+	  Thomas Mailund : mailund@birc.au.dk.
