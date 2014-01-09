@@ -46,17 +46,26 @@ endif(UNIX AND NOT APPLE)
 set_target_properties(zipHMM PROPERTIES OUTPUT_NAME libzipHMM PREFIX "" SUFFIX .so)
 
 ## PYTHON MODULE
-find_package(PythonLibs REQUIRED)
-include_directories(${PYTHON_INCLUDE_DIRS})
+find_package(PythonLibs)
+if(PYTHONLIBS_FOUND)
+  find_package(PythonInterp)
+  message(STATUS "Python bindings will be compiled.")
+  include_directories(${PYTHON_INCLUDE_DIRS})
+  link_libraries(${PYTHON_LIBRARIES})
 
-add_library(pyZipHMM SHARED pyZipHMM.cpp)
-set_target_properties(pyZipHMM PROPERTIES OUTPUT_NAME libpyZipHMM PREFIX "" SUFFIX .so)
-target_link_libraries(pyZipHMM zipHMM ${PYTHON_LIBRARIES})
-if(UNIX AND NOT APPLE)
-  target_link_libraries(pyZipHMM rt cblas atlas)
-endif(UNIX AND NOT APPLE)
 
-message("-- PYTHON_SITE_PACKAGES: ${PYTHON_SITE_PACKAGES}")
+  add_library(pyZipHMM SHARED pyZipHMM.cpp)
+  set_target_properties(pyZipHMM PROPERTIES OUTPUT_NAME libpyZipHMM PREFIX "" SUFFIX .so)
+  target_link_libraries(pyZipHMM zipHMM ${PYTHON_LIBRARIES})
+  if(UNIX AND NOT APPLE)
+    target_link_libraries(pyZipHMM rt cblas atlas)
+  endif(UNIX AND NOT APPLE)
+  
+  add_custom_command(TARGET pyZipHMM POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy libpyZipHMM.so pyZipHMM/libpyZipHMM.so)
+else(PYTHONLIBS_FOUND)
+  message(STATUS "Python bindings will not be compiled.")
+endif(PYTHONLIBS_FOUND)
+
 
 ## R MODULE
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
@@ -67,7 +76,10 @@ if(LIBR_FOUND)
   message(STATUS "R include: ${LIBR_INCLUDE_DIRS}")
   message(STATUS "R library: ${LIBR_LIBRARIES}")
 
-  add_custom_target(rZipHMM ALL COMMAND ${LIBR_EXECUTABLE} CMD SHLIB rZipHMM.cpp libzipHMM.so)
+  add_custom_target(rZipHMM ALL COMMAND ${LIBR_EXECUTABLE} CMD SHLIB rZipHMM.cpp libzipHMM.so -o librzipHMM.so)
+
+  add_custom_command(TARGET rZipHMM POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy librZipHMM.so rZipHMM/librZipHMM.so)
+  add_custom_command(TARGET rZipHMM POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy rZipHMM.r rZipHMM/R/rZipHMM.r)
 else(LIBR_FOUND)
   message(STATUS "R bindings will not be compiled.")
 endif(LIBR_FOUND)
@@ -140,7 +152,13 @@ add_test(
   COMMAND ${EXECUTABLE_OUTPUT_PATH}/test_forwarder
   )
 
-add_test(pyZipHMM "python" "../zipHMM/python_test.py")
+if(PYTHONLIBS_FOUND)
+  add_test(pyZipHMM "python" "../zipHMM/python_test.py")
+endif(PYTHONLIBS_FOUND)
+
+if(LIBR_FOUND)
+  add_test(rZipHMM "${LIBR_EXECUTABLE}" "--slave -f ../zipHMM/test_rZipHMM.r")
+endif(LIBR_FOUND)
 
 ## INSTALLATION
 set(zipHMM ${zipHMM_hpp} ${zipHMM_cpp})
@@ -148,12 +166,26 @@ set(zipHMM ${zipHMM_hpp} ${zipHMM_cpp})
 install(TARGETS zipHMM LIBRARY DESTINATION lib)
 install(FILES ${zipHMM_hpp} DESTINATION include/zipHMM)
 
-execute_process(COMMAND python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()" OUTPUT_VARIABLE PYTHON_SITE_PACKAGES OUTPUT_STRIP_TRAILING_WHITESPACE)
-install(TARGETS pyZipHMM LIBRARY DESTINATION ${PYTHON_SITE_PACKAGES})
-install(FILES pyZipHMM.py DESTINATION ${PYTHON_SITE_PACKAGES})
-
 install(TARGETS build_forwarder RUNTIME DESTINATION bin)
 install(TARGETS forward RUNTIME DESTINATION bin)
 install(TARGETS calibrate RUNTIME DESTINATION bin)
 install(TARGETS generate_hmm RUNTIME DESTINATION bin)
 install(TARGETS generate_seq RUNTIME DESTINATION bin)
+
+if(PYTHONLIBS_FOUND)
+  install(CODE "message(STATUS \"installing Python module\")")
+  if(PYTHON_PREFIX)
+    install(CODE "execute_process(WORKING_DIRECTORY zipHMM COMMAND ${PYTHON_EXECUTABLE} \"setup.py\" \"install\" \"--prefix=${PYTHON_PREFIX}\")")
+  else(PYTHON_PREFIX)
+    install(CODE "execute_process(WORKING_DIRECTORY zipHMM COMMAND ${PYTHON_EXECUTABLE} \"setup.py\" \"install\")")
+  endif(PYTHON_PREFIX)
+endif(PYTHONLIBS_FOUND)
+
+if(LIBR_FOUND)
+  install(CODE "message(STATUS \"installing R package\")")
+  if(R_PREFIX)
+    install(CODE "execute_process(WORKING_DIRECTORY zipHMM COMMAND ${LIBR_EXECUTABLE} CMD INSTALL -l ${R_PREFIX} \"rZipHMM\")")
+  else(R_PREFIX)
+    install(CODE "execute_process(WORKING_DIRECTORY zipHMM COMMAND ${LIBR_EXECUTABLE} CMD INSTALL \"rZipHMM\")")
+  endif(R_PREFIX)
+endif(LIBR_FOUND)
