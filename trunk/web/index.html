@@ -1,0 +1,295 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD XHTML//EN">
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="styles.css" media="all"/>
+<link rel="icon" type="image/png" href="favicon.ico">
+
+<meta name="description" content="..."/>
+<meta name="robots" content="index, follow, noodp"/>
+<meta name="google" content="notranslate" />
+
+<title>zipHMM</title>
+</head>
+
+<body>
+<div id=border>
+<div id="main">
+  
+  <img src="..." alt="zipHMM" style="float:right" width="540">
+  <h1>zipHMM - a HMM library for fast likelihood computations</h1>
+  
+  <p align="justify" style="width: 650px"> zipHMM is a library for
+  hidden Markov models that exploits repetitions in strings to greatly
+  speed up the calculations of the log-likelihood of a sequence. The
+  library is released under the <a
+   href="http://www.gnu.org/licenses/lgpl.html" target="blank">LGPL
+  license</a>.</br> </br> The library analyses the input string and
+  finds repetitive patterns and then reduces the string - similar to
+  how compression algorithms compress strings - by replacing
+  substrings with new symbols. The new symbols correspond to often
+  seen substrings, and we can precompute the probability for an HMM
+  scanning over such strings. The full likelihood can then be computed
+  similar to the traditional forward algorithm, but much faster since
+  the algorithm can skip over often seen substrings.  </p>
+  
+  <p style="width: 650px">
+  <code>zipHMM</code> has been implemented in C and C++ to achieve
+  maximal performance, but bindings to Python and R are also supplied
+  such that the library easily can be used for scripting.
+  </p>
+  
+  <p style="width: 650px">
+  In the following text we describe how to install <code>zipHMM</code>
+  on Mac OS X and Linux and illustrate how to use the enclosed
+  Python module and R package.
+  </p>
+  
+  <ol>
+    <li><a href="#citing_ziphmm">Citing zipHMM</a></li>
+    <li><a href="#files">Files</a></li>
+    <li><a href="#build_procedure">Build procedure</a></li>
+    <li><a href="#using_the_python_bindings">Using the Python bindings</a></li>
+    <li><a href="#using_the_R_bindings">Using the R bindings</a></li>
+    <li><a href="#file_formats">File formats</a></li>
+    <li><a href="#literature">Literature</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ol>
+  
+<h2><a id="citing_ziphmm">Citing zipHMM</a></h2>
+
+<p>
+If you use <code>zipHMM</code> in your research, please cite it in
+the following way:
+<ul>
+  
+  <li>Andreas Sand, Martin Kristiansen, Christian N. S. Pedersen,
+  Thomas Mailund;</br> <i>zipHMMlib: a highly optimised HMM library
+  exploiting repetitions in the input</br> to speed up the forward
+  algorithm</i>, BMC Bioinformatics 2013, 14(339),</br> doi: <a
+   href="http://dx.doi.org/10.1186/1471-2105-14-339"
+  target="blank">10.1186/1471-2105-14-339</a>.
+  
+</li>
+</ul>
+</p>
+
+<p>You can e.g. use <a href="zipHMM.bib" target="blank">this BibTex entry</a>.</p>
+
+<h2><a id="files">Files</a></h2>
+
+<ul>
+  <li>Mac OS X
+    <ul>
+      <li>R package: <a href="files/OSX/rZipHMM_1.0.tar.gz">rzipHMM_1.0.tar.gz</a></li>
+      <li>Python module: <a href="files/OSX/pyZipHMM_1.0.zip">pyZipHMM_1.0.zip</a></li>
+    </ul>
+  </li>
+  <li>Source: <a href="files/zipHMM-1.0.0.tar.gz">zipHMM-1.0.0.tar.gz</a></li>
+</ul>
+
+<h2><a id="build_procedure">Build procedure</a></h2>
+
+<h3><a id="install_binaries_from_source">Install binaries from source</a></h3>
+
+<p>To install zipHMM on Linux or Mac OS X from source download <a
+ href="files/zipHMM-1.0.0.tar.gz">zipHMM-1.0.0.tar.gz</a> and execute
+the following commands in a terminal:</p>
+
+<p>
+<div class="snip">
+$ cd &lt;path-to-file&gt;<br/>
+$ tar -xvf zipHMM-1.0.0.tar.gz<br/>
+$ cd zipHMM-1.0.0/<br/>
+$ cmake .<br/>
+$ make<br/>
+$ make test<br/>
+$ make install<br/>
+</div>
+</p>
+
+<p>This will also install the python module <code>pyZipHMM</code>
+and/or the R package <code>rZipHMM</code> if python and/or R is
+installed on your system.</p>
+
+<p>If you do not have permisions to install the package in the default
+location, you need to replace the fourth command above by something on
+this form:</p>
+
+<p>
+<div class="snip">
+  $ cmake -DCMAKE_INSTALL_PREFIX=&lt;install prefix&gt; \<br/>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-DPYTHON_PREFIX=&lt;python libs&gt; -DR_PREFIX=&lt;R libs&gt; .<br/>
+</div>
+</p>
+
+<p>Finally, if CMake is not installed on your system, you can download
+the newest version from <a href="http://cmake.org/"
+target="blank">http://cmake.org/</a>.</p>
+
+<h3><a id="mac_os_x">Mac OS X</a></h3> <p> To install the python
+module <code>pyZipHMM</code> on Mac OS X download <a
+ href="files/OSX/pyZipHMM_1.0.zip">pyZipHMM_1.0.zip</a> and execute
+the following commands in a terminal:</p>
+
+<p>
+<div class="snip">
+$ cd &lt;path-to-file&gt;<br/>
+$ unzip pyZipHMM_1.0.zip <br/>
+$ cd pyZipHMM_1.0<br/>
+$ python setup.py install<br/>
+</div>
+</p>
+
+<p>To install the R package <code>rZipHMM</code> on Mac OS X download
+<a href="files/OSX/rZipHMM_1.0.tar.gz">rZipHMM_1.0.tar.gz</a> and
+execute the following commands in a terminal:</p>
+
+<p>
+<div class="snip">
+$ cd &lt;path-to-file&gt;<br/>
+$ R CMD INSTALL rZipHMM_1.0.tar.gz<br/>
+</div>
+</p>  
+
+<h3><a id="linux">Linux</a></h3>
+
+<p>To install zipHMM on Linux you need to follow the instructions to
+<a href="#install_binaries_from_source">install binaries from
+source</a>. This will also install the R package and/or the python
+module if R and/or python is installed on your system.</p>
+
+<h2><a id="using_the_python_bindings">Using the Python bindings</a></h2>
+
+<p>The following <a href="files/example.py">example</a> illustrates
+how the Python module <code>pyZipHMM</code> can be used:</p>
+
+<p>
+<div class="snip">
+from pyZipHMM import *</br>
+</br>
+f1 = Forwarder.fromSequence(seqFilename = "../example.seq", alphabetSize = 3, minNoEvals = 10) </br>
+f1.writeToDirectory("../example_out") </br>
+</br>
+## Do something crazy </br>
+
+f2 = Forwarder.fromDirectory(directory = "../example_out") </br>
+pi, A, B = readHMM("../example.hmm") </br>
+</br>
+print "loglikelihood: ", f2.forward(pi, A, B) </br>
+# print "loglikelihood: ", f2.ptforward(pi, A, B) # parallelized version </br>
+</br>
+pdPath, pdTable = posteriorDecoding("../example.seq", pi, A, B) </br>
+print "posterior path[0:10]:", pdPath[0:10]</br>
+print "posterior table[:0:7]:"</br>
+for r in xrange(pdTable.getHeight()):</br>
+    for c in xrange(7):</br>
+        print ("%.5f" % pdTable[r,c]), "\t",</br>
+    print </br>
+</br>
+</br>
+viterbiPath, viterbi_ll  = viterbi("../example.seq", pi, A, B) </br>
+print "viterbi log likelihood:", viterbi_ll </br>
+print "viterbi path[0:10]:", viterbiPath[0:10]</br>
+</div>
+</p>
+
+<p>used functions. </br>
+</br>
+How to build pi, A, B
+</p>
+
+<p>
+<div class="snip">
+  How to build pi, A, B
+</div>
+</p>
+
+<h2><a id="using_the_R_bindings">Using the R bindings</a></h2>
+
+<p>The following <a href="files/example.r">example</a> illustrates how the R package
+<code>rZipHMM</code> can be used:</p>
+
+<p>
+<div class="snip">
+source('rZipHMM.r')</br>
+</br>
+f1 = Forwarder$new() </br>
+f1$readSeq(seqFilename = "example.seq", alphabetSize = 3, minNoEvals = 10) </br>
+</br>
+f1$writeToDirectory("example_out") </br>
+</br>
+## Do something crazy </br>
+</br>
+f2 = Forwarder$new() </br>
+f2$readFromDirectory(directory = "example_out") </br>
+hmm = readHMM("example.hmm") </br>
+</br>
+ll = f2$forward(hmm) </br>
+#ll = f2$ptforward(hmm) # parallelized version </br>
+cat("loglikelihood:", ll, "\n") </br>
+</br>
+</br>
+pd = posteriorDecoding("example.seq", hmm) </br>
+cat("posterior path [1:10]:", pd$path[1:10], "\n") </br>
+cat("posterior table [1:8,:]:\n") </br>
+pd$table[,1:8]</br>
+</br>
+</br>
+v = viterbi("example.seq", hmm) </br>
+cat("Viterbi log-likelihood:", v$loglik, "\n") </br>
+cat("Viterbi path [1:10]:\n") </br>
+v$path[1:10]</br>
+</div>
+</p>
+
+used functions...
+</br>
+hmm is a list of R matrices.
+
+<p>
+<div class="snip">
+  How to build hmm = list("pi" = pi, "A" = A, "B" = B)
+</div>
+</p>
+
+<h2><a id="file_formats">File formats</a></h2>
+
+<p>
+HMMs</br>
+Sequences</br>
+</p>
+
+<h2><a id="literature">Literature</a></h2>
+
+<p>The algorithms implemented in <code>zipHMM</code> was developed by
+<a href="http://birc.au.dk/~asand" target="blank">Andreas Sand</a>,
+Martin Kristiansen, <a href="http://birc.au.dk/~cstorm"
+target="blank">Christian N. S. Pedersen</a> and <a
+ href="http://birc.au.dk/~mailund" target="blank">Thomas
+Mailund</a>. Explanations of the algorithms together with details on
+their implementation and performance measurements are given in
+
+<ul>
+  
+  <li><a href="http://www.biomedcentral.com/1471-2105/14/339"
+  target="blank">zipHMMlib: a highly optimised HMM library exploiting
+  repetitions in the input to speed up the forward
+  algorithm</a></br>
+
+  Andreas Sand, Martin Kristiansen, Christian N. S. Pedersen, Thomas Mailund;</br>
+  BMC Bioinformatics 2013, 14(339), doi: <a href="http://dx.doi.org/10.1186/1471-2105-14-339" target="blank">10.1186/1471-2105-14-339</a>.
+
+</ul>
+</p>
+  
+<h2><a id="contact">Contact</a></h2>
+
+<p>If you encounter any problems or have questions about using
+ <code>zipHMM</code>, please contact <a
+  href="mailto:asand@birc.au.dk">Andreas Sand</a>.</p>
+
+</div>
+</div>
+</body>
+</html>
+  

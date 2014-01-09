@@ -19,26 +19,12 @@ ELSE(UNIX AND NOT APPLE)
 ENDIF(UNIX AND NOT APPLE)
 
 ## COMPILER FLAGS
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wconversion -O3 ${CMAKE_THREAD_LIBS_INIT}")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wconversion -O3 -g ${CMAKE_THREAD_LIBS_INIT}") # remove -g !!
 message("-- CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 
 ## C++ library
-file(GLOB zipHMM_hpp *.hpp)
-file(GLOB zipHMM_cpp *.cpp)
-set(zipHMM_lib_content ${zipHMM_cpp} ${zipHMM_hpp})
-
-ADD_LIBRARY(zipHMM ${zipHMM_lib_content})
-if(UNIX AND NOT APPLE)
-  target_link_libraries(zipHMM rt cblas atlas)
-endif(UNIX AND NOT APPLE)
-
-## PYTHON MODULE
-find_package(PythonLibs REQUIRED)
-include_directories(${PYTHON_INCLUDE_DIRS})
-
-add_library(pyZipHMM
-  SHARED 
-  pyZipHMM.cpp 
+ADD_LIBRARY(zipHMM 
+  SHARED
   forwarder.cpp
   simple_stop_forwarder.cpp
   matrix.cpp 
@@ -52,186 +38,154 @@ add_library(pyZipHMM
   Stage1JobControl.cpp
   posterior_decoding.cpp
   viterbi.cpp
-  debug.cpp
-  )
-set_target_properties(pyZipHMM PROPERTIES OUTPUT_NAME libpyZipHMM PREFIX "" SUFFIX .so)
-target_link_libraries(pyZipHMM ${PYTHON_LIBRARIES})
+  test_utils.cpp
+  debug.cpp)
 if(UNIX AND NOT APPLE)
-  target_link_libraries(pyZipHMM rt cblas atlas)
+  target_link_libraries(zipHMM rt cblas atlas)
 endif(UNIX AND NOT APPLE)
+set_target_properties(zipHMM PROPERTIES OUTPUT_NAME libzipHMM PREFIX "" SUFFIX .so)
 
-message("-- PYTHON_SITE_PACKAGES: ${PYTHON_SITE_PACKAGES}")
+## PYTHON MODULE
+find_package(PythonLibs)
+if(PYTHONLIBS_FOUND)
+  find_package(PythonInterp)
+  message(STATUS "Python bindings will be compiled.")
+  include_directories(${PYTHON_INCLUDE_DIRS})
+  link_libraries(${PYTHON_LIBRARIES})
+
+
+  add_library(pyZipHMM SHARED pyZipHMM.cpp)
+  set_target_properties(pyZipHMM PROPERTIES OUTPUT_NAME libpyZipHMM PREFIX "" SUFFIX .so)
+  target_link_libraries(pyZipHMM zipHMM ${PYTHON_LIBRARIES})
+  if(UNIX AND NOT APPLE)
+    target_link_libraries(pyZipHMM rt cblas atlas)
+  endif(UNIX AND NOT APPLE)
+  
+  add_custom_command(TARGET pyZipHMM POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy libpyZipHMM.so pyZipHMM/libpyZipHMM.so)
+else(PYTHONLIBS_FOUND)
+  message(STATUS "Python bindings will not be compiled.")
+endif(PYTHONLIBS_FOUND)
+
+
+## R MODULE
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+find_package(LibR)
+if(LIBR_FOUND)
+  message(STATUS "R bindings will be compiled.")
+  include_directories(${LIBR_INCLUDE_DIRS})
+  message(STATUS "R include: ${LIBR_INCLUDE_DIRS}")
+  message(STATUS "R library: ${LIBR_LIBRARIES}")
+
+  add_custom_target(rZipHMM ALL COMMAND ${LIBR_EXECUTABLE} CMD SHLIB rZipHMM.cpp libzipHMM.so -o librzipHMM.so)
+
+  add_custom_command(TARGET rZipHMM POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy librZipHMM.so rZipHMM/librZipHMM.so)
+  add_custom_command(TARGET rZipHMM POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy rZipHMM.r rZipHMM/R/rZipHMM.r)
+else(LIBR_FOUND)
+  message(STATUS "R bindings will not be compiled.")
+endif(LIBR_FOUND)
 
 ## EXECUTABLES
-add_executable(build_forwarder build_forwarder.cpp 
-  forwarder.cpp
-  hmm_utils.cpp
-  PThreadProcessingDevice.cpp
-  performance_description.cpp
-  Stage1JobControl.cpp
-  matrix.cpp
-  seq_io.cpp
-  hmm_io.cpp
-  io_utils.cpp
-  prob_spaces.cpp
-  debug.cpp
-  )
+add_executable(build_forwarder build_forwarder.cpp)
 if(UNIX AND NOT APPLE)
   target_link_libraries(build_forwarder rt cblas atlas)
 endif(UNIX AND NOT APPLE)
+target_link_libraries(build_forwarder zipHMM)
 
-add_executable(forward forward.cpp 
-  forwarder.cpp
-  hmm_utils.cpp
-  PThreadProcessingDevice.cpp
-  performance_description.cpp
-  Stage1JobControl.cpp
-  matrix.cpp
-  seq_io.cpp
-  hmm_io.cpp
-  io_utils.cpp
-  prob_spaces.cpp
-  debug.cpp
-  )
+add_executable(forward forward.cpp)
 if(UNIX AND NOT APPLE)
   target_link_libraries(forward rt cblas atlas)
 endif(UNIX AND NOT APPLE)
+target_link_libraries(forward zipHMM)
 
-# add_executable(viterbi viterbi_main.cpp 
-#   viterbi.cpp
-#   PThreadProcessingDevice.cpp
-#   performance_description.cpp
-#   matrix.cpp
-#   seq_io.cpp
-#   hmm_io.cpp
-#   hmm_utils.cpp
-#   io_utils.cpp
-#   prob_spaces.cpp
-#   debug.cpp
-#   )
-# if(UNIX AND NOT APPLE)
-#   target_link_libraries(forward cblas atlas)
-# endif(UNIX AND NOT APPLE)
-
-add_executable(calibrate calibrate.cpp 
-  matrix.cpp
-  seq_io.cpp
-  hmm_io.cpp
-  io_utils.cpp
-  prob_spaces.cpp
-  forwarder.cpp
-  hmm_utils.cpp
-  PThreadProcessingDevice.cpp
-  performance_description.cpp
-  Stage1JobControl.cpp
-  debug.cpp
-  )
+add_executable(calibrate calibrate.cpp)
 if(UNIX AND NOT APPLE)
   target_link_libraries(calibrate rt cblas atlas)
 endif(UNIX AND NOT APPLE)
+target_link_libraries(calibrate zipHMM)
 
-add_executable(generate_seq generate_seq.cpp 
-  matrix.cpp
-  seq_io.cpp
-  hmm_io.cpp
-  io_utils.cpp
-)
+add_executable(generate_seq generate_seq.cpp)
+if(UNIX AND NOT APPLE)
+  target_link_libraries(generate_seq rt cblas atlas)
+endif(UNIX AND NOT APPLE)
+target_link_libraries(generate_seq zipHMM)
 
-add_executable(generate_hmm generate_hmm.cpp 
-  matrix.cpp
-  seq_io.cpp
-  hmm_io.cpp
-  io_utils.cpp
-)
+add_executable(generate_hmm generate_hmm.cpp)
+if(UNIX AND NOT APPLE)
+  target_link_libraries(generate_hmm rt cblas atlas)
+endif(UNIX AND NOT APPLE)
+target_link_libraries(generate_hmm zipHMM)
 
-add_executable(generate_biased_hmm generate_biased_hmm.cpp 
-  matrix.cpp
-  seq_io.cpp
-  hmm_io.cpp
-  io_utils.cpp
-)
+add_executable(generate_biased_hmm generate_biased_hmm.cpp)
+if(UNIX AND NOT APPLE)
+  target_link_libraries(generate_biased_hmm rt cblas atlas)
+endif(UNIX AND NOT APPLE)
+target_link_libraries(generate_biased_hmm zipHMM)
 
 add_executable(generate_01_seq generate_01_seq.cpp)
 
-add_executable(cpp_example cpp_example.cpp
-  matrix.cpp
-  seq_io.cpp
-  hmm_io.cpp
-  io_utils.cpp
-  prob_spaces.cpp
-  forwarder.cpp
-  hmm_utils.cpp
-  PThreadProcessingDevice.cpp
-  performance_description.cpp
-  Stage1JobControl.cpp
-  posterior_decoding.cpp
-  viterbi.cpp
-  debug.cpp
-)
+add_executable(cpp_example cpp_example.cpp)
 if(UNIX AND NOT APPLE)
   target_link_libraries(cpp_example rt cblas atlas)
 endif(UNIX AND NOT APPLE)
+target_link_libraries(cpp_example zipHMM)
 
 ## TESTS
-add_executable(test_device_io test_device_io.cpp 
-  performance_description.cpp
-  io_utils.cpp
-  prob_spaces.cpp
-  hmm_utils.cpp
-  PThreadProcessingDevice.cpp
-  Stage1JobControl.cpp
-  test_utils.cpp
-  debug.cpp
-  )
+add_executable(test_device_io test_device_io.cpp)
 if(UNIX AND NOT APPLE)
   target_link_libraries(test_device_io rt cblas atlas)
 endif(UNIX AND NOT APPLE)
-
+target_link_libraries(test_device_io zipHMM)
 add_test(
   NAME test_device_io 
   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
   COMMAND ${EXECUTABLE_OUTPUT_PATH}/test_device_io
   )
 
-add_executable(test_forwarder test_forwarder.cpp
-  hmm_io.cpp
-  seq_io.cpp
-  io_utils.cpp 
-  forwarder.cpp
-  simple_stop_forwarder.cpp
-  hmm_utils.cpp
-  prob_spaces.cpp
-  test_utils.cpp
-  PThreadProcessingDevice.cpp
-  performance_description.cpp
-  Stage1JobControl.cpp
-  debug.cpp
-  )
+add_executable(test_forwarder test_forwarder.cpp)
 if(UNIX AND NOT APPLE)
   target_link_libraries(test_forwarder rt cblas atlas)
 endif(UNIX AND NOT APPLE)
-
+target_link_libraries(test_forwarder zipHMM)
 add_test(
   NAME test_forwarder 
   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
   COMMAND ${EXECUTABLE_OUTPUT_PATH}/test_forwarder
   )
 
-add_test(pyZipHMM "python" "../zipHMM/python_test.py")
+if(PYTHONLIBS_FOUND)
+  add_test(pyZipHMM "python" "../zipHMM/python_test.py")
+endif(PYTHONLIBS_FOUND)
 
+if(LIBR_FOUND)
+  add_test(rZipHMM "${LIBR_EXECUTABLE}" "--slave -f ../zipHMM/test_rZipHMM.r")
+endif(LIBR_FOUND)
 
 ## INSTALLATION
 set(zipHMM ${zipHMM_hpp} ${zipHMM_cpp})
 
-install(TARGETS zipHMM ARCHIVE DESTINATION lib)
+install(TARGETS zipHMM LIBRARY DESTINATION lib)
 install(FILES ${zipHMM_hpp} DESTINATION include/zipHMM)
-
-execute_process(COMMAND python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()" OUTPUT_VARIABLE PYTHON_SITE_PACKAGES OUTPUT_STRIP_TRAILING_WHITESPACE)
-install(TARGETS pyZipHMM LIBRARY DESTINATION ${PYTHON_SITE_PACKAGES})
-install(FILES pyZipHMM.py DESTINATION ${PYTHON_SITE_PACKAGES})
 
 install(TARGETS build_forwarder RUNTIME DESTINATION bin)
 install(TARGETS forward RUNTIME DESTINATION bin)
 install(TARGETS calibrate RUNTIME DESTINATION bin)
 install(TARGETS generate_hmm RUNTIME DESTINATION bin)
 install(TARGETS generate_seq RUNTIME DESTINATION bin)
+
+if(PYTHONLIBS_FOUND)
+  install(CODE "message(STATUS \"installing Python module\")")
+  if(PYTHON_PREFIX)
+    install(CODE "execute_process(WORKING_DIRECTORY zipHMM COMMAND ${PYTHON_EXECUTABLE} \"setup.py\" \"install\" \"--prefix=${PYTHON_PREFIX}\")")
+  else(PYTHON_PREFIX)
+    install(CODE "execute_process(WORKING_DIRECTORY zipHMM COMMAND ${PYTHON_EXECUTABLE} \"setup.py\" \"install\")")
+  endif(PYTHON_PREFIX)
+endif(PYTHONLIBS_FOUND)
+
+if(LIBR_FOUND)
+  install(CODE "message(STATUS \"installing R package\")")
+  if(R_PREFIX)
+    install(CODE "execute_process(WORKING_DIRECTORY zipHMM COMMAND ${LIBR_EXECUTABLE} CMD INSTALL -l ${R_PREFIX} \"rZipHMM\")")
+  else(R_PREFIX)
+    install(CODE "execute_process(WORKING_DIRECTORY zipHMM COMMAND ${LIBR_EXECUTABLE} CMD INSTALL \"rZipHMM\")")
+  endif(R_PREFIX)
+endif(LIBR_FOUND)
