@@ -58,6 +58,11 @@ Maintainer: Andreas Sand <asand@birc.au.dk>
 }
 \references{
 http://birc.au.dk/software/zipHMM
+
+Andreas Sand, Martin Kristiansen, Christian N. S. Pedersen, Thomas Mailund;
+zipHMMlib: a highly optimised HMM library exploiting repetitions in the input
+to speed up the forward algorithm, BMC Bioinformatics 2013, 14(339),
+doi: 10.1186/1471-2105-14-339.
 }
 \keyword{ package }
 \keyword{ rZipHMM }
