@@ -19,7 +19,7 @@ ELSE(UNIX AND NOT APPLE)
 ENDIF(UNIX AND NOT APPLE)
 
 ## COMPILER FLAGS
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wconversion -O3 -g ${CMAKE_THREAD_LIBS_INIT}") # remove -g !!
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wconversion -O3 ${CMAKE_THREAD_LIBS_INIT}")
 message("-- CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 
 ## C++ library
@@ -39,6 +39,7 @@ ADD_LIBRARY(zipHMM
   posterior_decoding.cpp
   viterbi.cpp
   test_utils.cpp
+  calibrate.cpp
   debug.cpp)
 if(UNIX AND NOT APPLE)
   target_link_libraries(zipHMM rt cblas atlas)
@@ -78,8 +79,11 @@ if(LIBR_FOUND)
 
   add_custom_target(rZipHMM ALL COMMAND ${LIBR_EXECUTABLE} CMD SHLIB rZipHMM.cpp libzipHMM.so -o librzipHMM.so)
 
-  add_custom_command(TARGET rZipHMM POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy librZipHMM.so rZipHMM/librZipHMM.so)
   add_custom_command(TARGET rZipHMM POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy rZipHMM.r rZipHMM/R/rZipHMM.r)
+  add_custom_command(TARGET rZipHMM POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy librZipHMM.so rZipHMM/librZipHMM.so)
+  add_custom_command(TARGET rZipHMM POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy librZipHMM.so rZipHMM/src/librZipHMM.so)
+  # add_custom_command(TARGET rZipHMM POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy librZipHMM.so rZipHMM/src/librZipHMM.so)
+  # add_custom_command(TARGET rZipHMM POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy rZipHMM.r rZipHMM/src/rZipHMM.r)
 else(LIBR_FOUND)
   message(STATUS "R bindings will not be compiled.")
 endif(LIBR_FOUND)
@@ -97,7 +101,7 @@ if(UNIX AND NOT APPLE)
 endif(UNIX AND NOT APPLE)
 target_link_libraries(forward zipHMM)
 
-add_executable(calibrate calibrate.cpp)
+add_executable(calibrate calibrate_main.cpp)
 if(UNIX AND NOT APPLE)
   target_link_libraries(calibrate rt cblas atlas)
 endif(UNIX AND NOT APPLE)
@@ -161,7 +165,7 @@ if(LIBR_FOUND)
 endif(LIBR_FOUND)
 
 ## INSTALLATION
-set(zipHMM ${zipHMM_hpp} ${zipHMM_cpp})
+file(GLOB zipHMM_hpp *.hpp)
 
 install(TARGETS zipHMM LIBRARY DESTINATION lib)
 install(FILES ${zipHMM_hpp} DESTINATION include/zipHMM)

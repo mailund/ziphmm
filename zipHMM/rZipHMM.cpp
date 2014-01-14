@@ -7,6 +7,7 @@
 #include "hmm_io.hpp"
 #include "posterior_decoding.hpp"
 #include "viterbi.hpp"
+#include "calibrate.hpp"
 
 #undef COMPLEX
 
@@ -359,3 +360,13 @@ extern "C" {
   }
 }
 
+// calibrate
+extern "C" {
+  void c_calibrate(SEXP device_filename_sexp) {
+    std::string device_filename = parse_string(device_filename_sexp, "device_filename");
+    if(std::strcmp(device_filename.c_str(), "-") == 0)
+      device_filename = zipHMM::DEFAULT_DEVICE_FILENAME;
+
+    zipHMM::calibrate(device_filename);
+  }
+}

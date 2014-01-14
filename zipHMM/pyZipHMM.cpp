@@ -5,6 +5,7 @@
 #include "hmm_io.hpp"
 #include "posterior_decoding.hpp"
 #include "viterbi.hpp"
+#include "calibrate.hpp"
 
 #include <iostream>
 #include <vector>
@@ -369,5 +370,14 @@ extern "C" {
     const zipHMM::Matrix *m = reinterpret_cast<const zipHMM::Matrix *>(m_ptr);
     m->print();
     return 1;
+  }
+}
+
+// Calibrate
+extern "C" {
+  int c_calibrate(const char *device_filename) {
+    zipHMM::calibrate(device_filename);
+
+    return 0;
   }
 }

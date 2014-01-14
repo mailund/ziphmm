@@ -3,6 +3,7 @@
 #include "timer.hpp"
 #include "forwarder.hpp"
 #include "seq_io.hpp"
+#include "performance_description.hpp"
 
 #include <iostream>
 #include <limits>
@@ -111,27 +112,13 @@ namespace zipHMM {
     for(size_t i = 0; i < N_DEVICE_FACTORIES; ++i)
       calibrateDevice(result[i], *(ALL_DEVICE_FACTORIES[i]));
   }
-}
 
-void help(const std::string &execName) {
-        std::cout << "Usage: " << execName << " [filename]" << std::endl;
-        exit(-1);
-}
-
-int main(int argc, char **argv) {
-  std::string filename = zipHMM::DEFAULT_DEVICE_FILENAME;
-  switch(argc) {
-  case 1:
-    break;
-  case 2:
-    filename = argv[1];
-    break;
-  default:
-    help(argv[0]);
+  void calibrate(const std::string &filename) {
+    std::string f = filename;
+    if(std::strcmp(filename.c_str(), "-") == 0)
+      f = zipHMM::DEFAULT_DEVICE_FILENAME;
+    std::vector<zipHMM::DeviceDescriptor> descriptors;
+    zipHMM::calibrateDevices(descriptors);
+    writeDescriptors(descriptors, filename);
   }
-  
-  std::vector<zipHMM::DeviceDescriptor> descriptors;
-  zipHMM::calibrateDevices(descriptors);
-  writeDescriptors(descriptors, filename);
 }
-

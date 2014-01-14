@@ -232,7 +232,7 @@ viterbi <- function(seqFilename, hmm) {
 
   res = .Call("c_viterbi", seqFilename, pi, A, B, noStates, alphabetSize)
 
-  return(list("loglik" = res[[1]], "path"=res[[2]]))
+  return(list("loglik" = res[[1]], "path" = res[[2]]))
 }
 
 posteriorDecoding <- function(seqFilename, hmm) {
@@ -262,4 +262,13 @@ posteriorDecoding <- function(seqFilename, hmm) {
   res = .Call("c_posterior_decoding", seqFilename, pi, A, B, noStates, alphabetSize)
 
   return(list("path" = res[[1]], "table" = res[[2]]))
+}
+
+calibrate <- function(deviceFilename) {
+  if(missing(deviceFilename))
+    .Call("c_calibrate", deviceFilename)
+  else
+    .Call("c_calibrate", "-")
+
+  cat()
 }

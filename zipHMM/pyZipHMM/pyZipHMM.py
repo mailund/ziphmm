@@ -1,9 +1,11 @@
 from ctypes import *
 from distutils.sysconfig import get_python_lib
+from os import path
 
 try:
-    lib = cdll.LoadLibrary("./libpyZipHMM.so")
-    library_location = "./libpyZipHMM.so"
+    d = path.dirname(__file__)
+    lib = cdll.LoadLibrary("%s/libpyZipHMM.so" % (d))
+    library_location = "%s/libpyZipHMM.so" % (d)
 except OSError:
     python_lib = get_python_lib()
     lib = cdll.LoadLibrary(python_lib + "/libpyZipHMM.so")
@@ -293,6 +295,13 @@ def viterbi(seqFilename, pi, A, B):
     viterbi_ll = lib.c_viterbi(viterbiPath.obj, pi.obj, A.obj, B.obj, c_char_p(seqFilename))
     return viterbiPath, viterbi_ll
         
+## calibrate
+def calibrate(deviceFilename = None):
+    if deviceFilename == None:
+        lib.c_calibrate("-")
+    else:
+        lib.c_calibrate(deviceFilename)
+
 
 if __name__ == "__main__":
     print "Constructing Matrix(3,7)"
@@ -339,4 +348,3 @@ if __name__ == "__main__":
     assert f.getNewAlphabetSize()  == 4
     print "Calling forward"
     assert abs(f.forward(pi, A, B) - -12.5671022728) < 0.001
-    

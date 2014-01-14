@@ -263,3 +263,12 @@ posteriorDecoding <- function(seqFilename, hmm) {
 
   return(list("path" = res[[1]], "table" = res[[2]]))
 }
+
+calibrate <- function(deviceFilename) {
+  if(missing(deviceFilename))
+    .Call("c_calibrate", deviceFilename)
+  else
+    .Call("c_calibrate", "-")
+
+  cat()
+}
