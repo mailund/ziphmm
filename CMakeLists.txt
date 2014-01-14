@@ -52,6 +52,7 @@ set(CPACK_SOURCE_IGNORE_FILES
   "Testing"
   "bin"
   "web"
+  "build"
 
   ${CPACK_SOURCE_IGNORE_FILES}
   )
