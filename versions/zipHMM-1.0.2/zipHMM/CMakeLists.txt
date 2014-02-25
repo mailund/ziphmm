@@ -77,7 +77,7 @@ if(LIBR_FOUND)
   message(STATUS "R include: ${LIBR_INCLUDE_DIRS}")
   message(STATUS "R library: ${LIBR_LIBRARIES}")
 
-  add_custom_target(rZipHMM ALL COMMAND ${LIBR_EXECUTABLE} CMD SHLIB rZipHMM.cpp libzipHMM.so -o librzipHMM.so)
+  add_custom_target(rZipHMM ALL COMMAND ${LIBR_EXECUTABLE} CMD SHLIB rZipHMM.cpp libzipHMM.so -o librZipHMM.so)
 
   add_custom_command(TARGET rZipHMM POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy rZipHMM.r rZipHMM/R/rZipHMM.r)
   add_custom_command(TARGET rZipHMM POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy librZipHMM.so rZipHMM/librZipHMM.so)

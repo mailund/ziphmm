@@ -1,2 +1,0 @@
-all:
-	cp ../librZipHMM.so .
