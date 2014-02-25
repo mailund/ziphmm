@@ -1,0 +1,2 @@
+PKG_CPPFLAGS = -I/com/extra/ATLAS/3.9.84/include
+PKG_LIBS = -L/com/extra/ATLAS/3.9.84/lib
