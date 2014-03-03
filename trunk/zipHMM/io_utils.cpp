@@ -79,7 +79,7 @@ namespace zipHMM {
     return ( getcwd(temp, MAX_PATH_LENGTH) ? std::string( temp ) : std::string("") );
   }
 
-  void mk_dir(std::string &path) {
+  void mk_dir(const std::string &path) {
 #if defined WIN32
     _mkdir(path.c_str());
 #else 
