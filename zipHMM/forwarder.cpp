@@ -454,13 +454,17 @@ namespace zipHMM {
 
 
   void Forwarder::write_to_directory(const std::string &directory) const {
-    std::string wd = get_working_directory();
-    std::string absolute_dir_name = wd + "/" + directory;
-    std::string data_structure_filename = absolute_dir_name + "/data_structure";
-    std::string nStates2seq_absolute_dir_name = absolute_dir_name + "/nStates2seq";
+//    std::string wd = get_working_directory();
+//    std::string absolute_dir_name = wd + "/" + directory;
+//    std::string data_structure_filename = absolute_dir_name + "/data_structure";
+//    std::string nStates2seq_absolute_dir_name = absolute_dir_name + "/nStates2seq";
     
-    // create directory
-    mk_dir(absolute_dir_name);
+    std::string data_structure_filename = directory + "/data_structure";
+    std::string nStates2seq_absolute_dir_name = directory + "/nStates2seq";
+      
+      // create directory
+//    mk_dir(absolute_dir_name);
+    mk_dir(directory);
     mk_dir(nStates2seq_absolute_dir_name);
 
     // write basic data structure
