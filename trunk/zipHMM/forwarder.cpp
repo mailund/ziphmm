@@ -141,7 +141,9 @@ namespace zipHMM {
       
       for(std::vector<std::vector<unsigned> >::iterator it = current_seqs_p->begin(); it != current_seqs_p->end(); ++it) {
 	std::vector<unsigned> &current_seq = (*it);
-	std::vector<unsigned> next_seq;
+	next_seqs_p->push_back(std::vector<unsigned>());
+	std::vector<unsigned> &next_seq = next_seqs_p->back();
+
 	next_seq.push_back( current_seq[0] );
 	// replace every occurrence of max_pair with a new alphabet symbol and count pairs at the same time
 	size_t i = 1; // first position is special because we have not seen any pairs yet.
@@ -166,8 +168,6 @@ namespace zipHMM {
 	  next_seq.push_back(current_seq[i]);
 	  add_count(pair_n, &next_seq, next_seq.size() - 2, counted, new_alphabet_size + 1);
 	}
-
-	next_seqs_p->push_back(next_seq); // copies sequence -- do something !!!
       }
       
       // set up for next round
