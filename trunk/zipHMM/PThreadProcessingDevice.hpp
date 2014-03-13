@@ -62,8 +62,7 @@ namespace zipHMM {
     void join();
 
     void setParameters(const Matrix *pi, const Matrix *A, const Matrix *B, 
-		       const std::map<unsigned, s_pair> *symbol2pair, double *symbol2scale, Matrix *symbol2matrix, 
-		       const std::vector<unsigned> *seq);
+		       const std::map<unsigned, s_pair> *symbol2pair, double *symbol2scale, Matrix *symbol2matrix);
 
     void setHMM(const Matrix *pi, const Matrix *A, const Matrix *B);
     void setSeq(const std::vector<unsigned> *seq) { this->seq = seq; }

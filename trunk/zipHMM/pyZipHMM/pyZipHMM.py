@@ -34,13 +34,15 @@ def readHMM(filename):
 
 def writeHMM(pi, A, B, filename):
     lib.c_write_HMM(pi.obj, A.obj, B.obj, c_char_p(filename))
-    
 
+lib.c_read_seq.restype = py_object
+def readSeq(filename):
+    return lib.c_read_seq(filename)
+    
 ## Forwarder
 lib.Forwarder_new.restype = c_void_p
 lib.Forwarder_forward.restype = c_double
 lib.Forwarder_pthread_forward.restype = c_double
-lib.Forwarder_pthread_forward_par_stage1.restype = c_double
 lib.Forwarder_get_orig_seq_length.restype = c_uint
 lib.Forwarder_get_orig_alphabet_size.restype = c_uint
 lib.Forwarder_get_seq_length.restype = c_uint
@@ -89,12 +91,6 @@ class Forwarder(object):
         else :
             return lib.Forwarder_pthread_forward(self.obj, pi.obj, A.obj, B.obj, device_filename)
 
-    def ptforwardParStage1(self, pi, A, B, device_filename = None):
-        if device_filename == None:
-            return lib.Forwarder_pthread_forward_par_stage1(self.obj, pi.obj, A.obj, B.obj, "-")
-        else :
-            return lib.Forwarder_pthread_forward_par_stage1(self.obj, pi.obj, A.obj, B.obj, device_filename)
-
     def getOrigSeqLength(self):
         return lib.Forwarder_get_orig_seq_length(self.obj)
 
@@ -125,82 +121,6 @@ class SimpleForwarder(object):
     def forward(self, pi, A, B):
         return lib.SimpleForwarder_forward(self.obj, pi.obj, A.obj, B.obj)
  
-## SimpleStopForwarder
-lib.SimpleStopForwarder_new.restype = c_void_p
-lib.SimpleStopForwarder_forward.restype = c_double
-lib.SimpleStopForwarder_pthread_forward.restype = c_double
-lib.SimpleStopForwarder_pthread_forward_par_stage1.restype = c_double
-lib.SimpleStopForwarder_get_orig_seq_length.restype = c_uint
-lib.SimpleStopForwarder_get_orig_alphabet_size.restype = c_uint
-lib.SimpleStopForwarder_get_seq_length.restype = c_uint
-lib.SimpleStopForwarder_get_alphabet_size.restype = c_uint
-lib.SimpleStopForwarder_get_pair.restype = py_object
-        
-class SimpleStopForwarder(object):
-    def __init__(self):
-        self.obj = c_void_p(lib.SimpleStopForwarder_new())
-
-    @staticmethod
-    def fromSequence(seqFilename, alphabetSize, nStatesSave = None):
-        forwarder = SimpleStopForwarder()
-
-        if nStatesSave != None:
-            arr = ( c_uint * len(nStatesSave) )()
-            arr[:] = nStatesSave
-            lib.SimpleStopForwarder_read_seq(forwarder.obj, c_char_p(seqFilename), alphabetSize, arr, len(nStatesSave))
-        else:
-            arr = ( c_uint * 0 )()
-            lib.SimpleStopForwarder_read_seq(forwarder.obj, c_char_p(seqFilename), alphabetSize, arr, 0)
-        
-        return forwarder
-    
-    @staticmethod
-    def fromDirectory(directory, nStates = None):
-        forwarder = Forwarder()
-        if nStates == None:
-            lib.SimpleStopForwarder_read_from_directory(forwarder.obj, c_char_p(directory))
-        else:
-            lib.SimpleStopForwarder_new_from_directory(forwarder.obj, c_char_p(directory), nStates)
-        return forwarder
-
-    def __del__(self):
-        from ctypes import cdll
-        lib = cdll.LoadLibrary(library_location)
-        lib.SimpleStopForwarder_destructor(self.obj)
-
-    def forward(self, pi, A, B):
-        return lib.SimpleStopForwarder_forward(self.obj, pi.obj, A.obj, B.obj)
-
-    def ptforward(self, pi, A, B, device_filename = None):
-        if device_filename == None:
-            return lib.SimpleStopForwarder_pthread_forward(self.obj, pi.obj, A.obj, B.obj, "-")
-        else :
-            return lib.SimpleStopForwarder_pthread_forward(self.obj, pi.obj, A.obj, B.obj, device_filename)
-
-    def ptforwardParStage1(self, pi, A, B, device_filename = None):
-        if device_filename == None:
-            return lib.SimpleStopForwarder_pthread_forward_par_stage1(self.obj, pi.obj, A.obj, B.obj, "-")
-        else :
-            return lib.SimpleStopForwarder_pthread_forward_par_stage1(self.obj, pi.obj, A.obj, B.obj, device_filename)
-
-    def getOrigSeqLength(self):
-        return lib.SimpleStopForwarder_get_orig_seq_length(self.obj)
-
-    def getOrigAlphabetSize(self):
-        return lib.SimpleStopForwarder_get_orig_alphabet_size(self.obj)
-
-    def getSeqLength(self, no_states):
-        return lib.SimpleStopForwarder_get_seq_length(self.obj, no_states)
-
-    def getAlphabetSize(self, no_states):
-        return lib.SimpleStopForwarder_get_alphabet_size(self.obj, no_states)
-
-    def getPair(self, symbol):
-        return lib.SimpleStopForwarder_get_pair(self.obj, symbol)
-         
-    def writeToDirectory(self, directory):
-        lib.SimpleStopForwarder_write_to_directory(self.obj, c_char_p(directory))
-
 ## Sequence
 lib.Sequence_new.restype = c_void_p
 lib.Sequence_destructor.restype = c_int
