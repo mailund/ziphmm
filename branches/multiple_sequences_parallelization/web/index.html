@@ -1,0 +1,667 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD XHTML//EN">
+<html>
+<head>
+
+<script type="text/javascript" src="scripts/shCore.js"></script>
+<script type="text/javascript" src="scripts/shBrushCpp.js"></script>
+<script type="text/javascript" src="scripts/shBrushPython.js"></script>
+<script type="text/javascript" src="scripts/shBrushR.js"></script>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+<link rel="stylesheet" type="text/css" href="styles.css" media="all"/>
+<link rel="icon" type="image/png" href="favicon.ico">
+
+<meta name="description" content="zipHMM is a library for hidden
+Markov models that exploits repetitions in strings to greatly speed up
+the calculations of the log-likelihood of a sequence"/>
+<meta name="robots" content="index, follow, noodp"/>
+<meta name="google" content="notranslate" />
+
+<title>zipHMM</title>
+</head>
+
+<body>
+<div id=border>
+<div id="main">
+
+  <h1>zipHMM - a HMM library for fast likelihood computations</h1>
+
+  <table class="image" style="float:right" frame="box" width="35%">
+    <tr>
+      <td style="text-align:center"><img src="img/Runtime_for_the_different_implementations.jpg" alt="zipHMM" width="540"></td>
+    </tr>
+    <tr>
+      <td type="caption" style="text-align:justify">
+	
+	The running time for training the <a
+	   href="http://scholar.google.dk/scholar?q=Coalescent+hidden+Markov+model"
+	  target="blank">Coalescent hidden Markov model (CoalHMM)</a>
+	  on a pairwise alignment of the full chromosome 1 from human
+	  and chimpanzee using zipHMM, parredHMMlib, HMMlib and a
+	  simple implementation of the forward algorithm. The HMMs
+	  used in these experiments had 16 states and an alphabet of
+	  size 3. The total speed-up obtained by replacing
+	  parredHMMlib by zipHMM amounts to a factor of 78. The
+	  per-iteration speed-up amounts to a factor of 93.
+	
+      </td>
+    </tr>
+  </table>
+  
+  <p align="justify" style="width: 65%"> zipHMM is a library for
+  hidden Markov models that exploits repetitions in strings to greatly
+  speed up the calculations of the log-likelihood of a sequence. The
+  library is released under the <a
+   href="http://www.gnu.org/licenses/lgpl.html" target="blank">LGPL
+  license</a>.</br> </br> The library analyses the input string and
+  finds repetitive patterns and then reduces the string - similar to
+  how compression algorithms compress strings - by replacing
+  substrings with new symbols. The new symbols correspond to often
+  seen substrings, and we can precompute the probability for an HMM
+  scanning over such strings. The full likelihood can then be computed
+  similar to the traditional forward algorithm, but much faster since
+  the algorithm can skip over often seen substrings.</br>
+  </br>
+  
+  A typical use case of zipHMM is for training HMM parameters, where
+  the likelihood function is often computed for several hundred
+  different sets of HMM parameters while the input sequences are kept
+  stable. zipHMM allows you to preprocess the input sequences once
+  such that you significantly reduce the time used on every likelihood
+  computation (see figure). The preprocessing can be saved to disk in
+  a data structure for later use.
+  
+  </p>
+  
+  <p style="width: 650px">
+  <code>zipHMM</code> has been implemented in C and C++ to achieve
+  maximal performance, but bindings to Python and R are also supplied
+  such that the library easily can be used for scripting.
+  </p>
+  
+  <p style="width: 650px">
+  In the following text we describe how to install <code>zipHMM</code>
+  on Mac OS X and Linux and illustrate how to use the enclosed
+  Python module and R package.
+  </p>
+  
+  <ol>
+    <li><a href="#citing_ziphmm">Citing zipHMM</a></li>
+    <li><a href="#files">Files</a></li>
+    <li><a href="#build_procedure">Build procedure</a></li>
+    <li><a href="#using_the_python_bindings">Using the Python bindings</a></li>
+    <li><a href="#using_the_R_bindings">Using the R bindings</a></li>
+    <li><a href="#using_the_library_from_cpp">Using the library from C++</a></li>
+    <li><a href="#file_formats">File formats</a></li>
+    <li><a href="executables">Executables</a></li>
+    <li><a href="#literature">Literature</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ol>
+  
+<h2><a id="citing_ziphmm">Citing zipHMM</a></h2>
+
+<p>
+If you use <code>zipHMM</code> in your research, please cite it in
+the following way:
+<ul>
+  
+  <li>Andreas Sand, Martin Kristiansen, Christian N. S. Pedersen,
+  Thomas Mailund;</br> <i>zipHMMlib: a highly optimised HMM library
+  exploiting repetitions in the input</br> to speed up the forward
+  algorithm</i>, BMC Bioinformatics 2013, 14(339),</br> doi: <a
+   href="http://dx.doi.org/10.1186/1471-2105-14-339"
+  target="blank">10.1186/1471-2105-14-339</a>.
+  
+</li>
+</ul>
+</p>
+
+<p>You can e.g. use <a href="zipHMM.bib" target="blank">this BibTex entry</a>.</p>
+
+<h2><a id="files">Files</a></h2>
+
+<ul>
+  <li>Source: <a href="files/zipHMM-1.0.2.tar.gz">zipHMM-1.0.2.tar.gz</a></li>
+    <li>Mac OS X
+    <ul>
+      <li>R package: <a
+  href="files/OSX/rZipHMM_1.0.2.tar.gz">rzipHMM_1.0.2.tar.gz</a>, <a href="files/calibrate.r">calibrate.r</a></li>
+      <li>Python module: <a href="files/OSX/pyZipHMM_1.0.2.zip">pyZipHMM_1.0.2.zip</a></li>
+    </ul>
+  </li>
+</ul>
+
+<p>
+Check out the latest version from Google Code via subversion:
+<pre class="snip">
+$ svn checkout http://ziphmm.googlecode.com/svn/trunk/ zipHMM-read-only
+</pre>
+</p>
+
+<h2><a id="build_procedure">Build procedure</a></h2>
+
+<h3><a id="install_binaries_from_source">Install binaries from source</a></h3>
+
+<p>To install zipHMM from source on Linux or Mac OS X download <a
+ href="files/zipHMM-1.0.2.tar.gz">zipHMM-1.0.2.tar.gz</a> and execute
+the following commands in a terminal:</p>
+
+<p>
+<pre class="snip">
+$ cd &lt;path-to-file&gt;
+$ tar -xvf zipHMM-1.0.2.tar.gz
+$ cd zipHMM-1.0.2/
+$ cmake .
+$ make
+$ bin/calibrate
+$ make test
+$ make install
+</pre>
+</p>
+
+<p>This will also install the python module <code>pyZipHMM</code>
+and/or the R package <code>rZipHMM</code> if python and/or R is
+installed on your system.</p>
+
+<p>If you do not have permisions to install the package in the default
+location, you need to replace the fourth command above by something on
+this form:</p>
+
+<p>
+<pre class="snip">
+$ cmake -DCMAKE_INSTALL_PREFIX=&lt;install prefix&gt; \
+        -DPYTHON_PREFIX=&lt;python libs&gt; -DR_PREFIX=&lt;R libs&gt; .
+</pre>
+</p>
+
+<p>Finally, if CMake is not installed on your system, you can download
+the newest version from <a href="http://cmake.org/"
+target="blank">http://cmake.org/</a>.</p>
+
+<h3><a id="mac_os_x">Mac OS X</a></h3> <p> To install the python
+module <code>pyZipHMM</code> on Mac OS X download <a
+ href="files/OSX/pyZipHMM_1.0.2.zip">pyZipHMM_1.0.2.zip</a> and execute
+the following commands in a terminal:</p>
+
+<p>
+<pre class="snip">
+$ cd &lt;path-to-file&gt;
+$ unzip pyZipHMM_1.0.2.zip
+$ cd pyZipHMM_1.0.2
+$ python setup.py install
+</pre>
+</p>
+
+<p>To install the R package <code>rZipHMM</code> on Mac OS X download
+<a href="files/OSX/rZipHMM_1.0.2.tar.gz">rZipHMM_1.0.2.tar.gz</a> and
+execute the following commands in a terminal:</p>
+
+<p>
+<pre class="snip">
+$ cd &lt;path-to-file&gt;
+$ R CMD INSTALL rZipHMM_1.0.2.tar.gz
+</pre>
+</p>
+
+<p>
+If you want to use the parallelized versions of the algorithms in R
+you furthermore need to download <a
+ href="files/calibrate.r">calibrate.r</a> and run this file:
+
+<pre class="snip">
+R --slave -f calibrate.r
+</pre>
+</p>
+
+<h3><a id="linux">Linux</a></h3>
+
+<p>To install zipHMM on Linux you need to follow the instructions to
+<a href="#install_binaries_from_source">install binaries from
+source</a>. This will also install the R package and/or the python
+module if R and/or python is installed on your system.</p>
+
+<h2><a id="using_the_python_bindings">Using the Python bindings</a></h2>
+
+<p>
+The following <a href="files/example.zip">example</a> shows a complete
+Python program that reads in an input sequence,
+<code>Forwarder.fromSequence(...)</code>, preprocess it (as part of
+reading in the sequence), stores the preprocessed structure to disk,
+<code>f.writeToDirectory(...)</code>, reads in an HMM from disk,
+<code>readHMM(...)</code>, and computes the log-likelihood of the HMM,
+<code>f.forward(...)</code>.
+</p>
+
+<p>
+<pre class="brush: py;">
+from pyZipHMM import *
+
+f = Forwarder.fromSequence(seqFilename = "example.seq", alphabetSize = 3, minNoEvals = 10)
+f.writeToDirectory("example_out")
+
+pi, A, B = readHMM("example.hmm")
+
+print "loglikelihood: ", f.forward(pi, A, B)
+
+
+pdPath, pdTable = posteriorDecoding("example.seq", pi, A, B)
+print "posterior path[0:10]:", pdPath[0:10]
+print "posterior table[:0:10]:"
+for r in xrange(pdTable.getHeight()):
+    for c in xrange(10):
+        print ("%.5f" % pdTable[r,c]), "\t",
+    print
+    
+
+viterbiPath, viterbi_ll  = viterbi("example.seq", pi, A, B)
+print "viterbi log likelihood:", viterbi_ll
+print "viterbi path[0:10]:", viterbiPath[0:10]
+</pre>
+
+<p>
+
+The sequence reader takes the alphabet size as parameter. This is
+because we cannot necessarily assume that the observed symbols in the
+input sequence are all the possible symbols the HMM can emit, so we
+need to know the alphabet size explicitly. It furthermore takes an
+optional parameter, <code>minNoEvals</code>, in which the user can
+specify an estimate of the number of times the preprocessing will be
+reused. The default value of this parameter is 1.
+
+</p>
+
+<p>
+
+If the preprocessed sequence is already stored on disk, we can simply
+read that instead like this:
+
+</p>
+
+<pre class="brush: py;">
+f = Forwarder.fromDirectory(directory = "example_out")
+</pre>
+
+<p>
+
+HMMs are implicitly represented simply by a vector and two matrices:
+the <code>pi</code> vector of initial state probabilities and the
+transition, <code>A</code>, and emission, <code>B</code>,
+matrices. These are all represented in a Matrix class.  In the example
+above these are read from disk using <code>readHMM(...)</code>, but
+they can also be directly constructed and manipulated in a program. In
+our own programs we use this, together with a numerical optimisation
+library, to fit parameters by maximising the likelihood.
+
+</p>
+
+<pre class="brush: py;">
+pi = Matrix(4,1)
+pi[0,0] = 0.25
+pi[1,0] = 0.20
+pi[2,0] = 0.20
+pi[3,0] = 0.35
+</pre>
+
+<p>An HMM can be written to disk using the function
+<code>writeHMM(...)</code>:</p>
+
+<pre class="brush: py;">
+pi = Matrix(4, 1);
+A  = Matrix(4, 4);
+B  = Matrix(4, 3);
+# initialize matrices
+writeHMM(pi, A, B, "out.hmm")
+</pre>
+
+<p>
+The <code>f.forward(...)</code> method computes the likelihood
+sequentially using the preprocessed structure. To use the
+multi-threaded parallelisation instead, one simply uses the
+<code>f.ptforward(...)</code> function, with the same
+parameters, instead.
+</p>
+
+<h2><a id="using_the_R_bindings">Using the R bindings</a></h2>
+
+<p>The following <a href="files/example.zip">example</a> is equivalent
+to the Python example above:</p>
+
+<p>
+<pre class="brush: r;">
+library('rZipHMM')
+
+f = Forwarder$new()
+f$readSeq(seqFilename = "example.seq", alphabetSize = 3, minNoEvals = 10)
+f$writeToDirectory("example_out")
+
+hmm = readHMM("example.hmm")
+
+cat("loglikelihood:", f$forward(hmm), "\n")
+# cat("loglikelihood:", f$ptforward(hmm), "\n") # parallelized version
+
+
+pd = posteriorDecoding("example.seq", hmm)
+cat("posterior path [1:10]:", pd$path[1:10], "\n")
+cat("posterior table [1:10,:]:\n")
+pd$table[,1:10]
+
+
+v = viterbi("example.seq", hmm)
+cat("Viterbi log-likelihood:", v$loglik, "\n")
+cat("Viterbi path [1:10]:\n")
+v$path[1:10]
+</pre>
+</p>
+
+<p>
+
+<code>hmm</code> is a list on the form <code>list("pi" = pi, "A" = A,
+"B" = B)</code>, where <code>pi</code> is an ordinary R vector and
+<code>A</code> and <code>B</code> are ordinary R matrices. In the
+example above <code>hmm</code> is read from disk using the function
+<code>readHMM(...)</code>, but it can also be build and written to
+disk in the code:
+
+<pre class="brush: R;">
+pi = as.vector(c(0.25, 0.75))
+A = matrix(c(0.25, 0.40, 0.75, 0.60), nrow = 2, ncol = 2)
+B = matrix(c(0.25, 0.30, 0.25, 0.40, 0.50, 0.30), nrow = 2, ncol=3)
+hmm = list("pi" = pi, "A" = A, "B" = B)
+writeHMM(hmm, "out.hmm")
+</pre>
+
+<p>
+
+To read a data structure that has been saved previously the method
+<code>f$readFromDirectory(...)</code> is used:
+
+</p>
+
+
+<pre class="brush: R;">
+f = Forwarder$new()
+f$readFromDirectory("example_out")
+</pre>
+
+
+<h2><a id="using_the_library_from_cpp">Using the library from C++</a></h2>
+
+<p>The following <a href="files/example.zip">example</a> is equivalent to the Python example
+above:</p>
+
+<p>
+<pre class="brush: cpp;">
+#include "zipHMM/hmm_io.hpp"
+#include "zipHMM/forwarder.hpp"
+#include "zipHMM/matrix.hpp"
+#include "zipHMM/viterbi.hpp"
+#include "zipHMM/posterior_decoding.hpp"
+
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+using namespace zipHMM;
+
+int main(int argc, char **args) {
+  
+  Forwarder f;
+  size_t alphabet_size = 3;
+  f.read_seq("example.seq", alphabet_size);
+  f1.write_to_directory("example.out");
+
+  Matrix pi, A, B;
+  read_HMM(pi, A, B, "example.hmm");
+
+  std::cout << "log-likelihood: " << f.forward(pi, A, B) << std::endl;
+  // std::cout << "log-likelihood: " << f.pthread_forward(pi, A, B)  << std::endl; # parallelized version
+
+
+  std::vector&lt;unsigned&gt; pd_path;
+  Matrix pd_table;
+  posterior_decoding("example.seq", pi, A, B, pd_path, pd_table);
+  std::cout << "posterior path[0:10]: ";
+  for(size_t i = 0; i < 10; ++i)
+    std::cout << pd_path[i] << " ";
+  std::cout << std::endl;
+  
+  std::cout << "posterior table column 0 - 9: " << std::endl;
+  for(size_t r = 0; r < 2; ++r) {
+    for(size_t c = 0; c < 10; ++c) {
+      std::cout << pd_table(r, c) << "\t";
+    }
+    std::cout << std::endl;
+  }
+
+  std::vector&lt;unsigned&gt; viterbi_path;
+  double viterbi_ll = viterbi("example.seq", pi, A, B, viterbi_path);
+  std::cout << "viterbi loglikelihood: " << viterbi_ll << std::endl;
+  std::cout << "viterbi path[0:10]: ";
+  for(size_t i = 0; i < 10; ++i)
+    std::cout << viterbi_path[i] << " ";
+  std::cout << std::endl;
+  
+  return 0;
+}
+</pre>
+</p>
+
+<p>
+
+In this example <code>pi</code>, <code>A</code> and <code>B</code> are
+read from disk using the function <code>readHMM(...)</code>, but they are
+objects of the class <code>Matrix</code> and can be build and written
+to the disk in the code:
+
+</p>
+
+<pre class="brush: cpp;">
+Matrix pi(4, 1);
+pi(0,0) = 0.25;
+pi(1,0) = 0.20;
+pi(2,0) = 0.20;
+pi(3,0) = 0.35;
+
+Matrix A(4, 4);
+// ... initialize A
+Matrix B(4, 3);
+// ... initialize B
+
+writeHMM(pi, A, B, "out.hmm");
+</pre>
+
+<p>
+
+To read a data structure that has been saved previously the method
+<code>f.read_from_directory(...)</code> is used:
+
+</p>
+
+<pre class="brush: cpp;">
+Forwarder f;
+f$read_from_directory("example_out");
+</pre>
+
+<h2><a id="file_formats">File formats</a></h2>
+
+<h3>Hidden Markov models</h3>
+<p>
+A hidden Markov model can be encoded in a text file in the following <a
+href="files/example/example.hmm" target="blank">format</a>:
+<pre class="snip">
+no_states
+2
+alphabet_size
+3
+pi
+0.17
+0.83
+A
+0.49 0.51
+0.18 0.82
+B
+0.69 0.06 0.25
+0.03 0.51 0.46
+</pre>
+</p>
+
+<h3>Sequences</h3>
+
+<p>
+
+An input sequence of observables is encoded as a space separated sequence over the
+alphabet {0, 1, ..., N - 1}, where N is the alphabet size of the hidden
+Markov model. <a href="files/example/example.seq" target="blank">E.g</a>:
+
+</p>
+
+<pre class="snip">
+0 0 0 0 2 2 1 1 1 2 2 2 2 1 2 0 2 0 1 1 2 1 2 1 0 2 2 2 0 1 2 1 2 0 1
+</pre>
+
+<h2><a id="executables">Executables</a></h2>
+
+<h3><code>calibrate</code></h3>
+<p>
+Usage:
+</p>
+<pre class="snip">
+$ bin/calibrate
+</pre>
+<p>
+Finds the optimal number of threads to use in the parallelized version
+of the forward algorithm.
+</p>
+
+
+<h3><code>build_forwarder</code></h3>
+<p>
+Usage:
+</p>
+
+<pre class="snip">
+$ bin/build_forwarder -s &lt;sequence filename&gt; -M &lt;alphabet size&gt; -o &lt;output directory&gt; [-N &lt;number of states&gt;]*
+</pre>
+<p>
+Builds a Forwarder object from the sequence in the file specified in
+<code>&lt;sequence filename&gt;</code> and writes it to the directory
+specified in <code>&lt;output directory&gt;</code>. <code>&lt;alphabet
+size&gt;</code> should be the size of the alphabet used in the
+observed sequence, and the file specified in <code>&lt;sequence
+filename&gt;</code> should contain a single line containing white
+space separated integers between 0 and <code>&lt;alphabet
+size&gt;</code> - 1. The list of HMM sizes to generate the data
+structure for can be specified using the <code>-N</code> parameter.
+</p>
+
+<p>
+Examples:
+</p>
+
+<pre class="snip">
+$ bin/build_forwarder -s example.seq -M 3 -o example_out
+$ bin/build_forwarder -s example.seq -M 3 -o example_out -N 2
+$ bin/build_forwarder -s example.seq -M 3 -o example_out -N 2 -N 4 -N 8 -N 16
+</pre>
+
+
+<h3><code>forward</code></h3>
+<p>
+Usage:
+</p>
+
+<pre class="snip">
+$ bin/forward (-s &lt;sequence filename&gt; -m &lt;HMM filename&gt; [-e number of expected forward calls] [-o &lt;output directory&gt;] )
+            | (-d &lt;preprocessing directory&gt; -m &lt;HMM filename&gt;) [-p]
+</pre>
+
+<p>
+Runs the forward algorithm and outputs the loglikelhood. This
+executable can be called in two different ways:
+</p>
+
+<pre class="snip">
+$ bin/forward -s example.seq -m example.hmm -e 500 -o example_out
+$ bin/forward -d example_out/ -m example.hmm
+</pre>
+<p>
+In the first example the loglikelihood is evaluated based on the
+observed sequence in example.seq and the HMM specified in
+example.hmm. In the second example the loglikelihood is evaluated
+based on the previously saved data structure in example_out/ and the
+HMM specified in example.hmm. In both cases the -p parameter can be
+used for invoking the parallelized version. In the first example the
+user can optionally choose to save the data structure in
+eg. example_out/ using the -o parameter:
+</p>
+
+<pre class="snip">
+$ bin/forward -s example.seq -m example.hmm -e 500 -o example_out/
+</pre>
+
+
+<h3><code>generate_hmm</code></h3>
+<p>
+Usage:
+</p>
+
+<pre class="snip">
+$ bin/generate_hmm &lt;number of states&gt; &lt;alphabet size&gt; &lt;HMM filename&gt;
+</pre>
+
+<p>
+Generates a random HMM with &lt;number of states&gt; states and &lt;alphabet
+size&gt; observables, and saves it to &lt;HMM filename&gt;.
+</p>
+
+
+<h3><code>generate_seq</code></h3>
+
+<p>
+Usage:
+</p>
+
+<pre class="snip">
+$ bin/generate_seq &lt;HMM filename&gt; &lt;length&gt; &lt;observed sequence output filename&gt; &lt;state sequence output filename&gt;
+</pre>
+
+<p>
+Given an HMM specified in &lt;HMM filename&gt;, runs the HMM for &lt;length&gt;
+iterations and saves the resulting sequence of observables to
+&lt;observed sequence output filename&gt; and the resulting sequence of
+hidden states to &lt;state sequence output filename&gt;.
+</p>
+
+<h2><a id="literature">Literature</a></h2>
+
+<p>The algorithms implemented in <code>zipHMM</code> was developed by
+<a href="http://birc.au.dk/~asand" target="blank">Andreas Sand</a>,
+Martin Kristiansen, <a href="http://birc.au.dk/~cstorm"
+target="blank">Christian N. S. Pedersen</a> and <a
+ href="http://birc.au.dk/~mailund" target="blank">Thomas
+Mailund</a>. Explanations of the algorithms together with details on
+their implementation and performance measurements are given in
+
+<ul>
+  
+  <li><a href="http://www.biomedcentral.com/1471-2105/14/339"
+  target="blank">zipHMMlib: a highly optimised HMM library exploiting
+  repetitions in the input to speed up the forward
+  algorithm</a></br>
+
+  Andreas Sand, Martin Kristiansen, Christian N. S. Pedersen, Thomas Mailund;</br>
+  BMC Bioinformatics 2013, 14(339), doi: <a href="http://dx.doi.org/10.1186/1471-2105-14-339" target="blank">10.1186/1471-2105-14-339</a>.
+
+</ul>
+</p>
+  
+<h2><a id="contact">Contact</a></h2>
+
+<p>If you encounter any problems or have questions about using
+ <code>zipHMM</code>, please contact <a
+  href="mailto:asand@birc.au.dk">Andreas Sand</a>.</p>
+
+</div>
+</div>
+</body>
+</html>
+  
