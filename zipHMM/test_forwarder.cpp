@@ -1,6 +1,5 @@
 #include "hmm_io.hpp"
 #include "seq_io.hpp"
-#include "simple_stop_forwarder.hpp"
 #include "forwarder.hpp"
 #include "simple_forwarder.hpp"
 #include "prob_spaces.hpp"
@@ -27,7 +26,6 @@ void test_forwarder(const std::string &hmmFilename, const std::string &seqFilena
   
   assertClose(forwarder.forward(pi, A, B), expected_ll, "Forwarder: Difference in likelihood log likelihood:", 0.0001);
   assertClose(forwarder.pthread_forward(pi, A, B), expected_ll, "pthread_forward: Difference in likelihood log likelihood:", 0.0001);
-  assertClose(forwarder.pthread_forward_par_stage1(pi, A, B), expected_ll, "pthread_forward_orig: Difference in likelihood log likelihood:", 0.0001);
   assertClose(s_forwarder.forward(pi, A, B), expected_ll, "s_forward: Difference in log likelihood:", 0.0001);
 
   std::cout << "ok." << std::endl;
@@ -47,13 +45,8 @@ void test_forwarder_long_sequence(const std::string &hmmFilename, const std::str
   Forwarder forwarder;
   forwarder.read_seq(seqFilename, alphabet_size, 500);
   SimpleForwarder s_forwarder(seqFilename);
-  SimpleStopForwarder ss_forwarder;
-  ss_forwarder.read_seq(seqFilename, alphabet_size, no_states);
-      
   assertClose(forwarder.forward(pi, A, B), expected_ll, "Forwarder: Difference in likelihood log likelihood:", 0.0001);
   assertClose(forwarder.pthread_forward(pi, A, B), expected_ll, "pthread_forward: Difference in likelihood log likelihood:", 0.0001);
-  assertClose(forwarder.pthread_forward_par_stage1(pi, A, B), expected_ll, "pthread_forward_orig: Difference in likelihood log likelihood:", 0.0001);
-  assertClose(ss_forwarder.forward(pi, A, B), expected_ll, "t_forward: Difference in log likelihood:", 0.0001);
   assertClose(s_forwarder.forward(pi, A, B), expected_ll, "s_forward: Difference in log likelihood:", 0.0001);
 
   std::cout << "ok." << std::endl;
@@ -120,7 +113,6 @@ int main(int argc, char **argv) {
   test_forwarder("test_data/testOffByOneEm.hmm",    "test_data/testOffByOneEm.seq",    1,   -16.6355);
   test_forwarder("test_data/testOffByOneTrans.hmm", "test_data/testOffByOneTrans.seq", 1,   LogSpace::ONE);
   test_forwarder("test_data/testOneState.hmm",      "test_data/testOneState.seq",      1,   -12.4766);
-  test_forwarder("test_data/testVectorReserve.hmm", "test_data/testVectorReserve.seq", 1,   -2.41869);
   test_forwarder("test_data/testZeroAdd.hmm",       "test_data/testZeroAdd.seq",       1,   LogSpace::ZERO);
   test_forwarder("test_data/testNoSolution.hmm",    "test_data/testNoSolution.seq",    1,   LogSpace::ZERO);
 

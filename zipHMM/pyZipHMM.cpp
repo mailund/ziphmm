@@ -1,5 +1,4 @@
 #include "forwarder.hpp"
-#include "simple_stop_forwarder.hpp"
 #include "simple_forwarder.hpp"
 #include "matrix.hpp"
 #include "hmm_io.hpp"
@@ -30,14 +29,37 @@ extern "C" {
     return 1;
   }
 
-int c_write_HMM(void *pi_ptr, void *A_ptr, void *B_ptr, const char *filename) {
+  int c_write_HMM(void *pi_ptr, void *A_ptr, void *B_ptr, const char *filename) {
     zipHMM::Matrix *pi = reinterpret_cast<zipHMM::Matrix *>(pi_ptr);
     zipHMM::Matrix *A = reinterpret_cast<zipHMM::Matrix *>(A_ptr);
     zipHMM::Matrix *B = reinterpret_cast<zipHMM::Matrix *>(B_ptr);
-
+    
     zipHMM::write_HMM(*pi, *A, *B, std::string(filename));
     return 1;
   }
+
+  PyObject *c_read_seq(const char *seq_filename) {
+    std::vector<unsigned> sequence;
+    zipHMM::readSeq(sequence, seq_filename);
+
+    Py_Initialize();
+
+    PyGILState_STATE gstate;
+    gstate = PyGILState_Ensure();
+    
+    PyObject *result = PyList_New(0);
+    for(std::vector<unsigned>::const_iterator it = sequence.begin(); it != sequence.end(); ++it) {
+      PyObject *i = PyLong_FromLong(*it);
+      PyList_Append(result, i);
+      Py_DECREF(i);
+    }
+    
+    PyGILState_Release(gstate);  
+
+    return result;
+  }
+
+
 }
 
 // Forwarder
@@ -90,17 +112,6 @@ extern "C" {
       return f->pthread_forward(*pi, *A, *B);
     else
       return f->pthread_forward(*pi, *A, *B, device_filename);
-  }
-
-  double Forwarder_pthread_forward_par_stage1(const void *f_ptr, const void *pi_ptr, const void *A_ptr, const void *B_ptr, const char *device_filename) { 
-    const zipHMM::Forwarder *f = reinterpret_cast<const zipHMM::Forwarder *>(f_ptr);
-    const zipHMM::Matrix *pi = reinterpret_cast<const zipHMM::Matrix *>(pi_ptr);
-    const zipHMM::Matrix *A = reinterpret_cast<const zipHMM::Matrix *>(A_ptr);
-    const zipHMM::Matrix *B = reinterpret_cast<const zipHMM::Matrix *>(B_ptr);
-    if(strcmp(device_filename, "-") == 0)
-      return f->pthread_forward_par_stage1(*pi, *A, *B);
-    else
-      return f->pthread_forward_par_stage1(*pi, *A, *B, device_filename);
   }
 
   size_t Forwarder_get_orig_seq_length(const void *f_ptr) { 
@@ -157,104 +168,6 @@ extern "C" {
     return 1;
   }
 
-}
-
-
-// SimpleStopForwarder
-extern "C" {
-
-  void *SimpleStopForwarder_new() {
-    return new zipHMM::SimpleStopForwarder();
-  }
-
-  void SimpleStopForwarder_read_seq(void *f_ptr, const char *seq_filename, size_t alphabet_size, unsigned *nStatesSave_array, size_t nStatesSave_length) {
-    zipHMM::SimpleStopForwarder *forwarder = reinterpret_cast<zipHMM::SimpleStopForwarder *>(f_ptr);
-
-    std::vector<size_t> nStatesSave_vector;
-    for(size_t i = 0; i < nStatesSave_length; ++i)
-      nStatesSave_vector.push_back(nStatesSave_array[i]);
-
-    forwarder->read_seq(seq_filename, alphabet_size, nStatesSave_vector); 
-  }
-
-  void SimpleStopForwarder_read_from_directory(void *f_ptr, const char *directory) {
-    zipHMM::SimpleStopForwarder *forwarder = reinterpret_cast<zipHMM::SimpleStopForwarder *>(f_ptr);
-
-    forwarder->read_from_directory(directory);
-  }
-
-  void SimpleStopForwarder_read_from_directory_and_no_states(void *f_ptr, const char *directory, const size_t no_states) {
-    zipHMM::SimpleStopForwarder *forwarder = reinterpret_cast<zipHMM::SimpleStopForwarder *>(f_ptr);
-    forwarder->read_from_directory(directory, no_states);
-  }
-
-  int SimpleStopForwarder_destructor(void *f_ptr) {
-    zipHMM::SimpleStopForwarder *f = reinterpret_cast<zipHMM::SimpleStopForwarder *>(f_ptr);
-    delete f;
-    return 1;
-  }
-
-  double SimpleStopForwarder_forward(const void *f_ptr, const void *pi_ptr, const void *A_ptr, const void *B_ptr) { 
-    const zipHMM::SimpleStopForwarder *f = reinterpret_cast<const zipHMM::SimpleStopForwarder *>(f_ptr);
-    const zipHMM::Matrix *pi = reinterpret_cast<const zipHMM::Matrix *>(pi_ptr);
-    const zipHMM::Matrix *A = reinterpret_cast<const zipHMM::Matrix *>(A_ptr);
-    const zipHMM::Matrix *B = reinterpret_cast<const zipHMM::Matrix *>(B_ptr);
-    return f->forward(*pi, *A, *B); 
-  }
-
-  double SimpleStopForwarder_pthread_forward(const void *f_ptr, const void *pi_ptr, const void *A_ptr, const void *B_ptr, const char *device_filename) { 
-    const zipHMM::SimpleStopForwarder *f = reinterpret_cast<const zipHMM::SimpleStopForwarder *>(f_ptr);
-    const zipHMM::Matrix *pi = reinterpret_cast<const zipHMM::Matrix *>(pi_ptr);
-    const zipHMM::Matrix *A = reinterpret_cast<const zipHMM::Matrix *>(A_ptr);
-    const zipHMM::Matrix *B = reinterpret_cast<const zipHMM::Matrix *>(B_ptr);
-    if(strcmp(device_filename, "-") == 0)
-      return f->pthread_forward(*pi, *A, *B);
-    else
-      return f->pthread_forward(*pi, *A, *B, device_filename);
-  }
-
-  double SimpleStopForwarder_pthread_forward_par_stage1(const void *f_ptr, const void *pi_ptr, const void *A_ptr, const void *B_ptr, const char *device_filename) { 
-    const zipHMM::SimpleStopForwarder *f = reinterpret_cast<const zipHMM::SimpleStopForwarder *>(f_ptr);
-    const zipHMM::Matrix *pi = reinterpret_cast<const zipHMM::Matrix *>(pi_ptr);
-    const zipHMM::Matrix *A = reinterpret_cast<const zipHMM::Matrix *>(A_ptr);
-    const zipHMM::Matrix *B = reinterpret_cast<const zipHMM::Matrix *>(B_ptr);
-    if(strcmp(device_filename, "-") == 0)
-      return f->pthread_forward_par_stage1(*pi, *A, *B);
-    else
-      return f->pthread_forward_par_stage1(*pi, *A, *B, device_filename);
-  }
-
-
-  size_t SimpleStopForwarder_get_orig_seq_length(const void *f_ptr) { 
-    const zipHMM::SimpleStopForwarder *f = reinterpret_cast<const zipHMM::SimpleStopForwarder *>(f_ptr);
-    return f->get_orig_seq_length();
-  }
-
-  size_t SimpleStopForwarder_get_orig_alphabet_size(const void *f_ptr) { 
-    const zipHMM::SimpleStopForwarder *f = reinterpret_cast<const zipHMM::SimpleStopForwarder *>(f_ptr);
-    return f->get_orig_alphabet_size(); 
-  }
-  
-  size_t SimpleStopForwarder_get_seq_length(const void *f_ptr, size_t no_states) { 
-    const zipHMM::SimpleStopForwarder *f = reinterpret_cast<const zipHMM::SimpleStopForwarder *>(f_ptr);
-    return f->get_seq_length(no_states); 
-  }
-
-  size_t SimpleStopForwarder_get_alphabet_size(const void *f_ptr, size_t no_states) { 
-    const zipHMM::SimpleStopForwarder *f = reinterpret_cast<const zipHMM::SimpleStopForwarder *>(f_ptr);
-    return f->get_alphabet_size(no_states); 
-  }
-
-  PyObject *SimpleStopForwarder_get_pair(const void *f_ptr, unsigned symbol) {
-    const zipHMM::SimpleStopForwarder *f = reinterpret_cast<const zipHMM::SimpleStopForwarder *>(f_ptr);
-    zipHMM::s_pair pair = f->get_pair(symbol); 
-    return Py_BuildValue("ll", pair.first, pair.second); // Py_BuildValue seg. faults for some reason.
-  }
-
-  void SimpleStopForwarder_write_to_directory(const void *f_ptr, const char *directory) {
-    const zipHMM::SimpleStopForwarder *f = reinterpret_cast<const zipHMM::SimpleStopForwarder *>(f_ptr);
-    f->write_to_directory(directory);
-  }
 }
 
 // posterior decoding

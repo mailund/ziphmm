@@ -27,21 +27,28 @@ int main(int argc, char **args) {
 
   // Compute the log-likelihood
   std::cout << "loglikelihood: "
-	    << f1.forward(pi, A, B)
-	    << std::endl;
+  	    << f1.forward(pi, A, B)
+  	    << std::endl;
   // std::cout << "loglikelihood: "
   //   	    << f1.pthread_forward(pi, A, B)
   // 	    << std::endl;
   
   Forwarder f2;
   f2.read_from_directory("example.out");
-  
+
   std::cout << "loglikelihood: "
 	    << f2.forward(pi, A, B)
 	    << std::endl;
-  std::cout << "loglikelihood: "
-   	    << f2.pthread_forward(pi, A, B)
-     	    << std::endl;
+  // std::cout << "loglikelihood: "
+  //  	    << f2.pthread_forward(pi, A, B)
+  //    	    << std::endl;
+
+  Forwarder f_seqs;
+  alphabet_size = 3;
+  f_seqs.read_seq_directory("example_seq_directory", alphabet_size);
+  std::cout << "seqs loglikelihood: "
+	    << f_seqs.forward(pi, A, B)
+	    << std::endl;
 
   // std::vector<unsigned> viterbi_path;
   // double viterbi_ll = viterbi("example.seq", pi, A, B, viterbi_path);

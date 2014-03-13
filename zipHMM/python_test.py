@@ -5,26 +5,6 @@ import sys
 
 class TestSequenceFunctions(unittest.TestCase):
 
-    def test_SimpleStopForwarder(self):
-        log = logging.getLogger( "python_test")
-        log.debug("Testing test_forwarder: ")
-        
-        (nStates, nObservables) = readHMMspec("../test_data/test6.hmm")
-        f = SimpleStopForwarder.fromSequence(seqFilename = "../test_data/test6_10000.seq", alphabetSize = 3, nStatesSave = [nStates])
-    
-        self.assertEqual(f.getOrigSeqLength(), 10000)
-        self.assertEqual(f.getOrigAlphabetSize(), 3)
-        self.assertEqual(f.getAlphabetSize(2), 349)
-    
-        # print "pair:", f.getPair(20) // seg. faults for some reason
-    
-        (pi, A, B) = readHMM("../test_data/test6.hmm")        
-        self.assertAlmostEqual(f.forward(pi, A, B), -10457.5211, delta=0.0001)
-        self.assertAlmostEqual(f.ptforward(pi, A, B), -10457.5211, delta=0.0001)
-        self.assertAlmostEqual(f.ptforwardParStage1(pi, A, B), -10457.5211, delta=0.0001)
-    
-        log.debug("ok.\n")
-
     def test_forwarder_io(self):
         log = logging.getLogger( "python_test")
         log.debug("Testing test_forwarder_io: ")
@@ -64,13 +44,14 @@ class TestSequenceFunctions(unittest.TestCase):
         
         self.assertAlmostEqual(forwarder1a.forward(pi, A, B), -10457.5211, delta=0.0001);
         self.assertAlmostEqual(forwarder1b.forward(pi, A, B), -10457.5211, delta=0.0001);
+        self.assertAlmostEqual(forwarder2a.forward(pi, A, B), -10457.5211, delta=0.0001);
         self.assertAlmostEqual(forwarder2b.forward(pi, A, B), -10457.5211, delta=0.0001);
 
         log.debug("ok.\n")
 
     def test_forwarder(self):
         log = logging.getLogger( "python_test")
-        log.debug("Testing test_SimpleStopForwarder: ")
+        log.debug("Testing test_forwarder: ")
 
         f = Forwarder.fromSequence(seqFilename = "../test_data/test6_10000.seq", alphabetSize = 3, nStatesSave = [2, 4, 8, 16, 32, 64], minNoEvals = 10)
 
@@ -105,7 +86,7 @@ class TestSequenceFunctions(unittest.TestCase):
     
         log.debug("ok.\n")
 
-    def test_biterbi(self):
+    def test_viterbi(self):
         log = logging.getLogger( "python_test")
         log.debug("Testing test_viterbi: ")
 
@@ -131,4 +112,3 @@ if __name__ == "__main__":
     logging.basicConfig( stream=sys.stderr )
     logging.getLogger( "python_test").setLevel( logging.DEBUG )
     unittest.main()
-
