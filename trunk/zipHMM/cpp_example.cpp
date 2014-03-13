@@ -29,14 +29,14 @@ int main(int argc, char **args) {
   std::cout << "loglikelihood: "
   	    << f1.forward(pi, A, B)
   	    << std::endl;
-  // std::cout << "loglikelihood: "
-  //   	    << f1.pthread_forward(pi, A, B)
-  // 	    << std::endl;
+  std::cout << "pthread loglikelihood: "
+     	    << f1.pthread_forward(pi, A, B)
+     	    << std::endl;
   
   Forwarder f2;
   f2.read_from_directory("example.out");
 
-  std::cout << "loglikelihood: "
+  std::cout << "from dir loglikelihood: "
 	    << f2.forward(pi, A, B)
 	    << std::endl;
   // std::cout << "loglikelihood: "
