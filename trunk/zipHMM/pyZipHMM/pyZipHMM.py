@@ -69,6 +69,20 @@ class Forwarder(object):
         return forwarder
 
     @staticmethod
+    def fromSequenceDirectory(dirname, alphabetSize, nStatesSave = None, minNoEvals = 1):
+        forwarder = Forwarder()
+
+        if nStatesSave != None:
+            arr = ( c_uint * len(nStatesSave) )()
+            arr[:] = nStatesSave
+            lib.Forwarder_read_seq_directory(forwarder.obj, c_char_p(dirname), alphabetSize, arr, len(nStatesSave), minNoEvals)
+        else:
+            arr = ( c_uint * 0 )()
+            lib.Forwarder_read_seq_directory(forwarder.obj, c_char_p(dirname), alphabetSize, arr, 0, minNoEvals)
+        
+        return forwarder
+
+    @staticmethod
     def fromDirectory(directory, nStates = None):
         forwarder = Forwarder()
         if nStates == None:

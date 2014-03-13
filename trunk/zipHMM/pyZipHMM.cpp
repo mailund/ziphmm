@@ -79,6 +79,18 @@ extern "C" {
     forwarder->read_seq(seq_filename, alphabet_size, nStatesSave_vector, min_no_evals); 
   }
 
+  // void read_seq_directory(const std::string &dir_filename, const size_t alphabet_size, std::vector<size_t> &nStatesSave, const size_t min_no_eval = 1);
+
+  void Forwarder_read_seq_directory(void *f_ptr, const char *dirname, const size_t alphabet_size, unsigned *nStatesSave_array, size_t nStatesSave_length, const size_t min_no_evals) {
+    zipHMM::Forwarder *forwarder = reinterpret_cast<zipHMM::Forwarder *>(f_ptr);
+
+    std::vector<size_t> nStatesSave_vector;
+    for(size_t i = 0; i < nStatesSave_length; ++i)
+      nStatesSave_vector.push_back(nStatesSave_array[i]);
+
+    forwarder->read_seq_directory(dirname, alphabet_size, nStatesSave_vector, min_no_evals);
+  }
+
   void Forwarder_read_from_directory(void *f_ptr, const char *directory) {
     zipHMM::Forwarder *forwarder = reinterpret_cast<zipHMM::Forwarder *>(f_ptr);
     forwarder->read_from_directory(directory);

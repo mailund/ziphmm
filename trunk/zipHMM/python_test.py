@@ -62,6 +62,20 @@ class TestSequenceFunctions(unittest.TestCase):
     
         log.debug("ok.\n")
 
+    def test_forwarder_multiple_seqs(self):
+        log = logging.getLogger( "python_test")
+        log.debug("Testing test_forwarder: ")
+
+        f = Forwarder.fromSequenceDirectory(dirname = "../test_data/seqs_directory" , alphabetSize = 3, nStatesSave = [2, 4, 8, 16, 32, 64], minNoEvals = 10)
+
+        pi, A, B = readHMM("../test_data/multiple_seqs.hmm")
+
+        self.assertAlmostEqual(f.forward(pi, A, B),   -52287.605268, delta = 0.0001)
+        self.assertAlmostEqual(f.ptforward(pi, A, B), -52287.605268, delta = 0.0001)
+
+        log.debug("ok.\n")
+        
+
     def test_SimpleForwarder(self):
         log = logging.getLogger( "python_test")
         log.debug("Testing test_SimpleForwarder: ")
