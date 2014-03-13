@@ -49,6 +49,9 @@ int main(int argc, char **args) {
   std::cout << "seqs loglikelihood: "
 	    << f_seqs.forward(pi, A, B)
 	    << std::endl;
+  std::cout << "pthread seqs loglikelihood: "
+	    << f_seqs.pthread_forward(pi, A, B)
+	    << std::endl;
 
   // std::vector<unsigned> viterbi_path;
   // double viterbi_ll = viterbi("example.seq", pi, A, B, viterbi_path);

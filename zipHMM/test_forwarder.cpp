@@ -24,15 +24,35 @@ void test_forwarder(const std::string &hmmFilename, const std::string &seqFilena
   forwarder.read_seq(seqFilename, alphabet_size, minNumEvals);
   SimpleForwarder s_forwarder(seqFilename);
   
-  assertClose(forwarder.forward(pi, A, B), expected_ll, "Forwarder: Difference in likelihood log likelihood:", 0.0001);
-  assertClose(forwarder.pthread_forward(pi, A, B), expected_ll, "pthread_forward: Difference in likelihood log likelihood:", 0.0001);
-  assertClose(s_forwarder.forward(pi, A, B), expected_ll, "s_forward: Difference in log likelihood:", 0.0001);
+  assertClose(forwarder.forward(pi, A, B), expected_ll, "Forwarder: Difference in loglikelihood:", 0.0001);
+  assertClose(forwarder.pthread_forward(pi, A, B), expected_ll, "pthread_forward: Difference in loglikelihood:", 0.0001);
+  assertClose(s_forwarder.forward(pi, A, B), expected_ll, "s_forward: Difference in loglikelihood:", 0.0001);
+
+  std::cout << "ok." << std::endl;
+}
+
+void test_forwarder_multiple_seqs() {
+  Forwarder forwarder;
+  Matrix pi, A, B;
+  size_t no_states, alphabet_size;
+
+  std::cout << "Testing forwarder with multiple sequences: ";
+  std::cout.flush();
+
+  read_HMM(pi, A, B, "../test_data/multiple_seqs.hmm");
+  no_states = pi.get_height();
+  alphabet_size = B.get_width();
+
+  forwarder.read_seq_directory("../test_data/seqs_directory", alphabet_size, no_states, 50);
+
+  assertClose(forwarder.forward(pi, A, B), -52287.6, "Forwarder: Difference in loglikelihood:", 0.0001);
+  assertClose(forwarder.pthread_forward(pi, A, B), -52287.6, "pthread_forward: Difference in loglikelihood:", 0.0001);
 
   std::cout << "ok." << std::endl;
 }
 
 void test_forwarder_long_sequence(const std::string &hmmFilename, const std::string &seqFilename, double expected_ll) {
- Matrix pi, A, B;
+  Matrix pi, A, B;
   size_t no_states, alphabet_size;
 
   std::cout << "Testing " << hmmFilename << " " << seqFilename << ": ";
