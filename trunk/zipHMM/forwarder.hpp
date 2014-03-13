@@ -25,7 +25,6 @@ namespace zipHMM {
     size_t orig_alphabet_size;
     std::map<unsigned, s_pair> symbol2pair;
     std::map<size_t, size_t> nStates2alphabet_size;
-    std::map<size_t, std::vector<unsigned> > nStates2seq;
     std::map<size_t, std::vector<std::vector<unsigned> > > nStates2seqs;
     
   public:

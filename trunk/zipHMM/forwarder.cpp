@@ -370,8 +370,10 @@ namespace zipHMM {
 
     compute_symbol2scale_and_symbol2matrix(symbol2matrix, symbol2scale, A, B, alphabet_size);
 
+    result = new Matrix();
+    temp = new Matrix();
+
     numberOfDevices = device_descriptor.getNDevices();
-    
     for(unsigned i = 0; i < numberOfDevices; ++i) {
       devices.push_back(device_descriptor.createDevice(i));
       devices[i]->setParameters(&pi, &A, &B, &symbol2pair, symbol2scale, symbol2matrix);
@@ -393,10 +395,7 @@ namespace zipHMM {
     
       for(unsigned i = 0; i < numberOfDevices; ++i)
 	devices[i]->join();
-      
-      result = new Matrix();
-      temp = new Matrix();
-  
+        
       head = control.headBlock - 1;
   
       Matrix::copy(*control.resultMatrices[head], *result);
@@ -408,14 +407,14 @@ namespace zipHMM {
     
 	loglikelihood += LinearSpace::toLogSpace(result->normalize()) + control.resultLogLikelihoods[i];
       }
-
-      for(unsigned i = 0; i < devices.size(); ++i)
-	delete devices[i];
-  
-      delete result;
-      delete temp;
     }
-  
+
+    for(unsigned i = 0; i < devices.size(); ++i)
+      delete devices[i];
+
+    delete result;
+    delete temp;
+
     delete[] symbol2scale;
     delete[] symbol2matrix;
 
