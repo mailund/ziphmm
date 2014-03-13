@@ -1,7 +1,6 @@
 #define COMPLEX COMPLEX1 // COMPLEX is declared in two third-party header files. This gets rid of one of them
 
 #include "forwarder.hpp"
-#include "simple_stop_forwarder.hpp"
 #include "simple_forwarder.hpp"
 #include "matrix.hpp"
 #include "hmm_io.hpp"

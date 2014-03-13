@@ -26,7 +26,7 @@ namespace zipHMM {
 
   std::string get_user_dir();
 
-  void mk_dir(const std::string &path);
+  void mk_dir(std::string &path);
   
   std::string get_working_directory();
 }
