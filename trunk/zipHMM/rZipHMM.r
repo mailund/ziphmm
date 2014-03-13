@@ -91,6 +91,30 @@ Forwarder <- setRefClass(
       cat()
     },
 
+    readSeqDirectory = function(dirname, alphabetSize, nStatesSave = NULL, minNoEvals = 1) {
+      if(missing(dirname))
+        stop("dirname is missing")
+      if(missing(alphabetSize))
+        stop("alphabetSize is missing")
+      
+      if(!is.numeric(alphabetSize))
+        stop("alphabetSize should be a number")
+      alphabetSize = as.integer(alphabetSize)
+
+      if(missing(minNoEvals))
+        minNoEvals = 1
+      else if(!is.numeric(minNoEvals))
+        stop("minNoEvals should be a number")
+      minNoEvals = as.integer(minNoEvals)      
+
+      if(!missing(nStatesSave))
+        .Call("Forwarder_read_seq_directory", ptr, dirname, alphabetSize, nStatesSave, minNoEvals)
+      else
+        .Call("Forwarder_read_seq_directory", ptr, dirname, alphabetSize, NULL, minNoEvals)
+
+      cat()
+    },
+
     readFromDirectory = function(directory, nStates = NULL) {
       if(missing(directory))
         stop("directory is missing")

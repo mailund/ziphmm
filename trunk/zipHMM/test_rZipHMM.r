@@ -44,3 +44,16 @@ stopifnot(mprime == 34)
 
 p = f$getPair(7)
 stopifnot(p[1] == 1 && p[2] == 1)
+
+
+hmm = readHMM("../test_data/multiple_seqs.hmm")
+
+f = Forwarder$new()
+f$readSeqDirectory(dirname = "../test_data/seqs_directory", alphabetSize = 3, minNoEvals = 10)
+
+ll = f$forward(hmm)
+stopifnot(all.equal(ll, -52287.60, tolerance=0.001))
+
+ptll = f$ptforward(hmm)
+stopifnot(all.equal(ptll, -52287.60, tolerance=0.001))
+
