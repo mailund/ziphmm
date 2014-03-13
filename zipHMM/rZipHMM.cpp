@@ -157,6 +157,27 @@ extern "C" {
     f->read_seq(seq_filename, alphabet_size, nStatesSave, min_no_evals);
   }
 
+  void Forwarder_read_seq_directory(SEXP f_ptr_sexp, SEXP dirname_sexp, SEXP alphabet_size_sexp, SEXP nStatesSave_sexp, SEXP min_no_evals_sexp) {
+    zipHMM::Forwarder *f = cast_forwarder(f_ptr_sexp);
+
+    std::string dirname = parse_string(dirname_sexp, "dirname");
+    int alphabet_size = parse_integer(alphabet_size_sexp, "alphabet_size");
+    int min_no_evals = parse_integer(min_no_evals_sexp, "min_no_evals");
+
+    std::vector<size_t> nStatesSave;
+    if(!isNull(nStatesSave_sexp)) {
+      if(isVector(nStatesSave_sexp)) {
+	int *nStatesSave_content = INTEGER(nStatesSave_sexp);
+	for(size_t i = 0; i < GET_LENGTH(nStatesSave_sexp); ++i) // something like this
+	  nStatesSave.push_back(nStatesSave_content[i]);
+      } else {
+	error("nStatesSave_sexp should be a vector");
+      }
+    }
+    
+    f->read_seq_directory(dirname, alphabet_size, nStatesSave, min_no_evals);
+  }
+
   void Forwarder_read_from_directory(SEXP f_ptr_sexp, SEXP directory_sexp) {
     zipHMM::Forwarder *f = cast_forwarder(f_ptr_sexp);
     std::string directory = parse_string(directory_sexp, "directory");
