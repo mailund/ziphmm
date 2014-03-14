@@ -34,7 +34,6 @@ ADD_LIBRARY(zipHMM
   hmm_utils.cpp
   PThreadProcessingDevice.cpp
   performance_description.cpp
-  Stage1JobControl.cpp
   posterior_decoding.cpp
   viterbi.cpp
   test_utils.cpp

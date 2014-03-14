@@ -233,6 +233,23 @@ extern "C" {
     return loglik_sexp;
   }
 
+  SEXP Forwarder_mr_ptforward(SEXP f_ptr_sexp, SEXP pi_sexp, SEXP A_sexp, SEXP B_sexp, SEXP no_states_sexp, SEXP alphabet_size_sexp) { 
+
+    zipHMM::Forwarder *f = cast_forwarder(f_ptr_sexp);
+
+    zipHMM::Matrix pi, A, B;
+    convert_HMM_parameters(pi_sexp, A_sexp, B_sexp, no_states_sexp, alphabet_size_sexp, pi, A, B);
+
+    double loglik = f->mr_pthread_forward(pi, A, B);
+
+    SEXP loglik_sexp;
+    PROTECT(loglik_sexp = NEW_NUMERIC(1.0));
+    NUMERIC_POINTER(loglik_sexp)[0] = loglik;
+
+    UNPROTECT(1);
+    return loglik_sexp;
+  }
+
   SEXP Forwarder_get_orig_seq_length(SEXP f_ptr_sexp) { 
 
     zipHMM::Forwarder *f = cast_forwarder(f_ptr_sexp);

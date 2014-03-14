@@ -2,9 +2,8 @@
 
 #include "prob_spaces.hpp"
 #include "hmm_utils.hpp"
-#include "Stage1JobControl.hpp"
 #include "Stage2JobControl.hpp"
-#include "ViterbiJobControl.hpp"
+#include "MapReduceJobControl.hpp"
 #include "debug.hpp"
 
 #include <pthread.h>
@@ -16,8 +15,6 @@ namespace zipHMM {
   
   namespace {
 
-    // make template??
-
     struct InternalStage2JobControl {
       PThreadProcessingDevice &self;
       Stage2JobControl &control;
@@ -27,62 +24,15 @@ namespace zipHMM {
       {}
     };
 
-    struct InternalStage1JobControl {
+    struct InternalMapReduceJobControl {
       PThreadProcessingDevice &self;
-      Stage1JobControl &control;
+      MapReduceJobControl &control;
       
-      InternalStage1JobControl(PThreadProcessingDevice &self, Stage1JobControl &control)
-	: self(self), control(control)
-      {}
-    };
-
-    struct ViterbiInternalJobControl {
-      PThreadProcessingDevice &self;
-      ViterbiJobControl &control;
-      
-      ViterbiInternalJobControl(PThreadProcessingDevice &self,
-				ViterbiJobControl &control)
+      InternalMapReduceJobControl(PThreadProcessingDevice &self, MapReduceJobControl &control)
 	: self(self), control(control)
       {}
     };
   }
-
-
-
-  void *processSymbol2scaleAndSymbol2matrix(void *internalStage1JobControl_ptr) {
-    InternalStage1JobControl *internalControl = static_cast<InternalStage1JobControl *>(internalStage1JobControl_ptr);
-    PThreadProcessingDevice &device = internalControl->self;
-    Stage1JobControl &control = internalControl->control;
-    std::deque<unsigned> jobs_to_do;
-
-    while(control.get_jobs(jobs_to_do) != 0) { // fetch jobs
-      for(std::deque<unsigned>::iterator it = jobs_to_do.begin(); it != jobs_to_do.end(); ++it) { // do computations
-	unsigned symbol = (*it);
-	DEBUG("%d computing symbol %d\n", device.id, symbol);
-	
-	s_pair symbol_pair = device.getPair(symbol);
-	unsigned left_symbol  = symbol_pair.second;
-	unsigned right_symbol = symbol_pair.first;
-
-	const Matrix &left_matrix  = device.getMatrix(left_symbol);
-	const Matrix &right_matrix = device.getMatrix(right_symbol);
-	
-	Matrix::blas_mult(left_matrix, right_matrix, device.getMatrix(symbol));
-	device.getScale(symbol) = std::log( device.getMatrix(symbol).normalize() ) + device.getScale(left_symbol) + device.getScale(right_symbol);
-      }
-
-      // do updates
-      control.update(jobs_to_do); // now jobs_done
-      jobs_to_do.clear();
-    }
-
-    return 0;
-  }
-
-  void PThreadProcessingDevice::computeSymbol2ScaleAndSymbol2Matrix(Stage1JobControl &control) {
-    pthread_create(&thread, 0, processSymbol2scaleAndSymbol2matrix, new InternalStage1JobControl(*this, control));
-  }
-
 
   void processLikelihood(Matrix &resultMatrix, double &resultLogLikelihood, PThreadProcessingDevice &device, size_t seqBegin, size_t seqEnd) {
     const std::vector<unsigned> &seq = device.getSeq();
@@ -185,6 +135,63 @@ namespace zipHMM {
 
   void PThreadProcessingDevice::likelihoodMatrix(Stage2JobControl &control) {
     pthread_create(&thread, 0, processLikelihoodMatrix, new InternalStage2JobControl(*this, control));
+  }
+
+  void *processMapReduceLoglikelihood(void *vInternalMapReduceJobControl) {
+    InternalMapReduceJobControl *internalControl = static_cast<InternalMapReduceJobControl *>(vInternalMapReduceJobControl);
+    PThreadProcessingDevice &device = internalControl->self;
+    MapReduceJobControl &control = internalControl->control;
+
+    std::deque<double> scales;
+    Matrix resultMatrix;
+    Matrix tmp;
+    
+    device.clearResult();
+
+    pthread_mutex_lock(&control.mutex);
+    while(control.headBlock < control.nBlocks) {
+      size_t block = control.headBlock++;
+      // std::cout << "mr took block " << block << std::endl;
+      pthread_mutex_unlock(&control.mutex);
+
+      for(size_t i = control.getBlockBegin(block); i < control.getBlockEnd(block); ++i) {
+	// std::cout << "block " << block << " processing sequence " << i << std::endl;
+	
+	const std::vector<unsigned> &sequence = device.getSeq(i);
+	
+	scales.clear();
+
+	// compute C_1 and push corresponding scale
+	scales.push_back(std::log(init_apply_em_prob(resultMatrix, device.getInitProbs(), device.getEmProbs(), sequence[0])));
+	
+	// multiply matrices across the sequence
+	for(size_t i = 1; i < sequence.size(); ++i) {
+	  Matrix::blas_mult(device.getMatrix(sequence[i]), resultMatrix, tmp);
+	  Matrix::copy(tmp, resultMatrix);
+	  scales.push_back( std::log( resultMatrix.normalize() ) );
+	  scales.push_back( device.getScale(sequence[i]) );
+	}
+	
+	// compute loglikelihood by summing log of scales
+	double loglikelihood = 0.0;
+	for(std::deque<double>::iterator it = scales.begin(); it != scales.end(); ++it) {
+	  loglikelihood += (*it);
+	}
+	
+
+	control.resultLogLikelihoods[block] += loglikelihood;
+      }
+
+      pthread_mutex_lock(&control.mutex);
+    }
+    pthread_mutex_unlock(&control.mutex);
+    
+    delete internalControl;
+    return 0;
+  }
+
+  void PThreadProcessingDevice::mapReduceLoglikelihood(MapReduceJobControl &control) {
+    pthread_create(&thread, 0, processMapReduceLoglikelihood, new InternalMapReduceJobControl(*this, control));
   }
 
  
