@@ -43,6 +43,8 @@ namespace zipHMM {
     double forward(const Matrix &pi, const Matrix &A, const Matrix &B) const;
     double pthread_forward(const Matrix &pi, const Matrix &A, const Matrix &B, const std::string &device_filename = DEFAULT_DEVICE_FILENAME) const;
     double pthread_forward(const Matrix &pi, const Matrix &A, const Matrix &B, const DeviceDescriptor &device_descriptor) const;
+    double mr_pthread_forward(const Matrix &pi, const Matrix &A, const Matrix &B, const DeviceDescriptor &device_descriptor) const;
+    double mr_pthread_forward(const Matrix &pi, const Matrix &A, const Matrix &B, const std::string &device_filename = DEFAULT_DEVICE_FILENAME) const;
 
     void write_to_directory(const std::string &directory) const;
 

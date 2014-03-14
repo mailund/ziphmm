@@ -59,6 +59,7 @@ class TestSequenceFunctions(unittest.TestCase):
     
         self.assertAlmostEqual(f.forward(pi, A, B), -10457.5210537, delta = 0.0001)
         self.assertAlmostEqual(f.ptforward(pi, A, B), -10457.5210537, delta = 0.0001)
+        self.assertAlmostEqual(f.mrforward(pi, A, B), -10457.5210537, delta = 0.0001)
     
         log.debug("ok.\n")
 
@@ -72,6 +73,7 @@ class TestSequenceFunctions(unittest.TestCase):
 
         self.assertAlmostEqual(f.forward(pi, A, B),   -52287.605268, delta = 0.0001)
         self.assertAlmostEqual(f.ptforward(pi, A, B), -52287.605268, delta = 0.0001)
+        self.assertAlmostEqual(f.mrforward(pi, A, B), -52287.605268, delta = 0.0001)
 
         log.debug("ok.\n")
         
