@@ -30,6 +30,9 @@ stopifnot(all.equal(ll, -10457.52, tolerance=0.001))
 ptll = f$ptforward(hmm)
 stopifnot(all.equal(ptll, -10457.52, tolerance=0.001))
 
+mrll = f$mrforward(hmm)
+stopifnot(all.equal(mrll, -10457.52, tolerance=0.001))
+
 l = f$getOrigSeqLength()
 stopifnot(l == 10000)
 
@@ -57,3 +60,5 @@ stopifnot(all.equal(ll, -52287.60, tolerance=0.001))
 ptll = f$ptforward(hmm)
 stopifnot(all.equal(ptll, -52287.60, tolerance=0.001))
 
+mrll = f$mrforward(hmm)
+stopifnot(all.equal(mrll, -52287.60, tolerance=0.001))

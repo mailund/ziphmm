@@ -189,6 +189,35 @@ Forwarder <- setRefClass(
       
     },
 
+    mrforward = function(hmm, deviceFilename = NULL) {
+      if(missing(hmm))
+        stop("hmm is missing")
+
+      if(!is.list(hmm) || !("pi" %in% names(hmm) && "A" %in% names(hmm) && "B" %in% names(hmm)))
+        stop("hmm should be a list of the form list(\"pi\" = ..., \"A\" = ..., \"B\" = ...)")
+      
+      pi = hmm$pi
+      A = hmm$A
+      B = hmm$B
+      
+      if(!is.vector(pi))
+        stop("hmm$pi should be a vector.")
+      if(!is.matrix(A))
+        stop("hmm$A should be a matrix.")
+      if(!is.matrix(B))
+        stop("hmm$A should be a matrix.")
+            
+      noStates = dim(B)[1]
+      alphabetSize = dim(B)[2]
+
+      if(missing(deviceFilename)) {
+        .Call("Forwarder_mr_ptforward", ptr, pi, A, B, noStates, alphabetSize, "-")
+      } else {
+        .Call("Forwarder_mr_ptforward", ptr, pi, A, B, noStates, alphabetSize, deviceFilename)
+      }
+      
+    },
+
     getOrigSeqLength = function() {
       return(.Call("Forwarder_get_orig_seq_length", ptr))
     },

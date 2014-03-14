@@ -15,7 +15,7 @@ namespace zipHMM {
     std::vector<Matrix *> resultMatrices;
     std::vector<double> resultLogLikelihoods;
     
-    Stage2JobControl(size_t seqLength, size_t nBlocks, std::vector<unsigned> *resultSequence = 0)
+    Stage2JobControl(size_t seqLength, size_t nBlocks)
       : seqLength(seqLength), nBlocks(nBlocks),
 	headBlock(0), tailBlock(nBlocks),
 	resultMatrices(nBlocks, 0),

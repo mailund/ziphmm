@@ -5,7 +5,6 @@
 #include "hmm_utils.hpp"
 #include "PThreadProcessingDevice.hpp"
 #include "performance_description.hpp"
-#include "Stage1JobControl.hpp"
 #include "Stage2JobControl.hpp"
 #include "debug.hpp"
 
@@ -23,12 +22,6 @@
 #include <cstdlib>
 #include <climits>
 #include <dirent.h>
-
-#ifdef WITH_CUDA
-#include "cutil.h"
-#include <cuda_runtime.h> 
-#include "cublas_v2.h"
-#endif
 
 
 namespace zipHMM {
@@ -427,6 +420,85 @@ namespace zipHMM {
     return pthread_forward(pi, A, B, device_descriptors[0]);
   }
 
+
+  double Forwarder::mr_pthread_forward(const Matrix &pi, const Matrix &A, const Matrix &B, const DeviceDescriptor &device_descriptor) const {
+    if(pi.get_width() != 1 || pi.get_height() != A.get_width() || A.get_height() != A.get_width() ||
+       B.get_height() != A.get_width() || B.get_width() != orig_alphabet_size) {
+      std::cerr << "Dimensions of input matrices do not match:" << std::endl;
+      std::cerr << "\t" << "pi width:  " << pi.get_width()  << std::endl;
+      std::cerr << "\t" << "pi height: " << pi.get_height() << std::endl;
+      std::cerr << "\t" << "A width:  "  << A.get_width()   << std::endl;
+      std::cerr << "\t" << "A height: "  << A.get_height()  << std::endl;
+      std::cerr << "\t" << "B width:  "  << B.get_width()   << std::endl;
+      std::cerr << "\t" << "B height: "  << B.get_height()  << std::endl;
+      std::exit(-1);
+    }
+
+    double *symbol2scale;
+    Matrix *symbol2matrix;
+    const std::vector<std::vector< unsigned> > *sequences;
+    std::vector<ProcessingDevice*> devices;
+    size_t numberOfDevices;
+    double loglikelihood;
+
+    // find alphabet and seqs for given number of states
+    size_t no_states = A.get_width();
+    size_t alphabet_size = 0;
+    for(std::map<size_t, std::vector<std::vector<unsigned> > >::const_iterator it = nStates2seqs.begin(); it != nStates2seqs.end(); ++it) {
+      if(it->first >= no_states) {
+	sequences = &(it->second);
+	alphabet_size = nStates2alphabet_size.find(it->first)->second;
+	break;
+      }
+    }
+    if(sequences == 0) {
+      sequences = &(nStates2seqs.rbegin()->second);
+      alphabet_size = nStates2alphabet_size.rbegin()->second;
+    }
+
+    symbol2scale = new double[alphabet_size];
+    symbol2matrix = new Matrix[alphabet_size];
+
+    compute_symbol2scale_and_symbol2matrix(symbol2matrix, symbol2scale, A, B, alphabet_size);
+
+    numberOfDevices = device_descriptor.getNDevices();
+    for(unsigned i = 0; i < numberOfDevices; ++i) {
+      devices.push_back(device_descriptor.createDevice(i));
+      devices[i]->setParameters(&pi, &A, &B, &symbol2pair, symbol2scale, symbol2matrix);
+      devices[i]->setSeqs(sequences);
+    }
+
+    const size_t length = sequences->size();
+    const size_t nBlocks = size_t(std::sqrt(length));
+    
+    MapReduceJobControl control(length, nBlocks);
+
+    for(unsigned i = 0; i < numberOfDevices; ++i)
+      devices[i]->mapReduceLoglikelihood(control);
+    
+    for(unsigned i = 0; i < numberOfDevices; ++i)
+      devices[i]->join();
+        
+    loglikelihood = 0.0;
+    for(size_t i = 0; i < nBlocks; ++i) {
+      loglikelihood += control.resultLogLikelihoods[i];
+    }
+    
+    for(unsigned i = 0; i < devices.size(); ++i)
+      delete devices[i];
+
+    delete[] symbol2scale;
+    delete[] symbol2matrix;
+
+    return loglikelihood;
+  }
+
+  double Forwarder::mr_pthread_forward(const Matrix &pi, const Matrix &A, const Matrix &B, const std::string &device_filename) const {
+    std::vector<DeviceDescriptor> device_descriptors;
+    readDescriptors(device_descriptors, device_filename);
+    return mr_pthread_forward(pi, A, B, device_descriptors[0]);
+  }
+
   void Forwarder::write_to_directory(const std::string &directory) const {
     std::string wd = get_working_directory();
     std::string absolute_dir_name;
@@ -625,25 +697,6 @@ namespace zipHMM {
       Matrix::blas_mult(left_matrix, right_matrix, symbol2matrix[i]);
       symbol2scale[i] = std::log( symbol2matrix[i].normalize() ) + symbol2scale[left_symbol] + symbol2scale[right_symbol];
     }
-  }
-
-  void Forwarder::pthread_compute_symbol2scale_and_symbol2matrix(double *symbol2scale, Matrix *symbol2matrix, 
-								 const Matrix &A, const Matrix &B, 
-								 const size_t alphabet_size, 
-								 const std::vector<ProcessingDevice*> &devices) const{
-    // compute C matrices and scales for each symbol in the original alphabet
-    make_em_trans_probs_array(symbol2scale, symbol2matrix, A, B);
-
-    // create control object 
-    Stage1JobControl control(orig_alphabet_size, alphabet_size, &symbol2pair, devices.size());
-
-    // do computations for the remaining symbols in parallel
-    for(unsigned i = 0; i < devices.size(); ++i)
-      devices[i]->computeSymbol2ScaleAndSymbol2Matrix(control);
-
-    // join
-    for(unsigned i = 0; i < devices.size(); ++i)
-      devices[i]->join();
   }
 
   size_t Forwarder::get_seq_length(size_t no_states) const {
