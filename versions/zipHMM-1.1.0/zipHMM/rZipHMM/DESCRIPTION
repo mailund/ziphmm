@@ -1,0 +1,11 @@
+Package: rZipHMM
+Type: Package
+Title: zipHMM is a package for working with general discrete hidden Markov models, greatly speeding up the likelihood computation by using the zipForward algorithm.
+Version: 1.1.0
+Date: 2014-01-08
+Author: Andreas Sand
+Maintainer: Andreas Sand <asand@birc.au.dk>
+Description: zipHMM is a library for hidden Markov models that exploits repetitions in strings to greatly speed up the calculations of the log-likelihood of a sequence. The library analyses the input string and finds repetitive patterns and then reduces the string - similar to how compression algorithms compress strings - by replacing substrings with new symbols. The new symbols correspond to often seen substrings, and we can precompute the probability for an HMM scanning over such strings. The full likelihood can then be computed similar to the traditional forward algorithm, but much faster since the algorithm can skip over often seen substrings.
+Depends: methods
+License: LGPL
+URL: http://birc.au.dk/software/zipHMM
