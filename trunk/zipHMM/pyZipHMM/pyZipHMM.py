@@ -43,6 +43,7 @@ def readSeq(filename):
 lib.Forwarder_new.restype = c_void_p
 lib.Forwarder_forward.restype = c_double
 lib.Forwarder_pthread_forward.restype = c_double
+lib.Forwarder_mr_pthread_forward.restype = c_double
 lib.Forwarder_get_orig_seq_length.restype = c_uint
 lib.Forwarder_get_orig_alphabet_size.restype = c_uint
 lib.Forwarder_get_seq_length.restype = c_uint
@@ -104,6 +105,12 @@ class Forwarder(object):
             return lib.Forwarder_pthread_forward(self.obj, pi.obj, A.obj, B.obj, "-")
         else :
             return lib.Forwarder_pthread_forward(self.obj, pi.obj, A.obj, B.obj, device_filename)
+
+    def mrforward(self, pi, A, B, device_filename = None):
+        if device_filename == None:
+            return lib.Forwarder_mr_pthread_forward(self.obj, pi.obj, A.obj, B.obj, "-")
+        else :
+            return lib.Forwarder_mr_pthread_forward(self.obj, pi.obj, A.obj, B.obj, device_filename)
 
     def getOrigSeqLength(self):
         return lib.Forwarder_get_orig_seq_length(self.obj)

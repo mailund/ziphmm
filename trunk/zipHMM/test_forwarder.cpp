@@ -26,6 +26,7 @@ void test_forwarder(const std::string &hmmFilename, const std::string &seqFilena
   
   assertClose(forwarder.forward(pi, A, B), expected_ll, "Forwarder: Difference in loglikelihood:", 0.0001);
   assertClose(forwarder.pthread_forward(pi, A, B), expected_ll, "pthread_forward: Difference in loglikelihood:", 0.0001);
+  assertClose(forwarder.mr_pthread_forward(pi, A, B), expected_ll, "mr_pthread_forward: Difference in loglikelihood:", 0.0001);
   assertClose(s_forwarder.forward(pi, A, B), expected_ll, "s_forward: Difference in loglikelihood:", 0.0001);
 
   std::cout << "ok." << std::endl;
@@ -47,6 +48,7 @@ void test_forwarder_multiple_seqs() {
 
   assertClose(forwarder.forward(pi, A, B), -52287.6, "Forwarder: Difference in loglikelihood:", 0.0001);
   assertClose(forwarder.pthread_forward(pi, A, B), -52287.6, "pthread_forward: Difference in loglikelihood:", 0.0001);
+  assertClose(forwarder.mr_pthread_forward(pi, A, B), -52287.6, "mr_pthread_forward: Difference in loglikelihood:", 0.0001);
 
   std::cout << "ok." << std::endl;
 }
@@ -65,8 +67,9 @@ void test_forwarder_long_sequence(const std::string &hmmFilename, const std::str
   Forwarder forwarder;
   forwarder.read_seq(seqFilename, alphabet_size, 500);
   SimpleForwarder s_forwarder(seqFilename);
-  assertClose(forwarder.forward(pi, A, B), expected_ll, "Forwarder: Difference in likelihood log likelihood:", 0.0001);
-  assertClose(forwarder.pthread_forward(pi, A, B), expected_ll, "pthread_forward: Difference in likelihood log likelihood:", 0.0001);
+  assertClose(forwarder.forward(pi, A, B), expected_ll, "Forwarder: Difference in log likelihood:", 0.0001);
+  assertClose(forwarder.pthread_forward(pi, A, B), expected_ll, "pthread_forward: Difference in log likelihood:", 0.0001);
+  assertClose(forwarder.mr_pthread_forward(pi, A, B), expected_ll, "mr_pthread_forward: Difference in log likelihood:", 0.0001);
   assertClose(s_forwarder.forward(pi, A, B), expected_ll, "s_forward: Difference in log likelihood:", 0.0001);
 
   std::cout << "ok." << std::endl;

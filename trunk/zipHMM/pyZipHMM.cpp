@@ -126,6 +126,17 @@ extern "C" {
       return f->pthread_forward(*pi, *A, *B, device_filename);
   }
 
+  double Forwarder_mr_pthread_forward(const void *f_ptr, const void *pi_ptr, const void *A_ptr, const void *B_ptr, const char *device_filename) { 
+    const zipHMM::Forwarder *f = reinterpret_cast<const zipHMM::Forwarder *>(f_ptr);
+    const zipHMM::Matrix *pi = reinterpret_cast<const zipHMM::Matrix *>(pi_ptr);
+    const zipHMM::Matrix *A = reinterpret_cast<const zipHMM::Matrix *>(A_ptr);
+    const zipHMM::Matrix *B = reinterpret_cast<const zipHMM::Matrix *>(B_ptr);
+    if(strcmp(device_filename, "-") == 0)
+      return f->mr_pthread_forward(*pi, *A, *B);
+    else
+      return f->mr_pthread_forward(*pi, *A, *B, device_filename);
+  }
+
   size_t Forwarder_get_orig_seq_length(const void *f_ptr) { 
     const zipHMM::Forwarder *f = reinterpret_cast<const zipHMM::Forwarder *>(f_ptr);
     return f->get_orig_seq_length();

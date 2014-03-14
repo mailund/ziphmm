@@ -1,7 +1,6 @@
 #include "hmm_io.hpp"
 #include "forwarder.hpp"
 #include "matrix.hpp"
-// #include "viterbi.hpp"
 #include "posterior_decoding.hpp"
 #include "viterbi.hpp"
 
@@ -32,6 +31,9 @@ int main(int argc, char **args) {
   std::cout << "pthread loglikelihood: "
      	    << f1.pthread_forward(pi, A, B)
      	    << std::endl;
+  std::cout << "mr_pthread loglikelihood: "
+     	    << f1.mr_pthread_forward(pi, A, B)
+     	    << std::endl;
   
   Forwarder f2;
   f2.read_from_directory("example.out");
@@ -52,6 +54,9 @@ int main(int argc, char **args) {
   std::cout << "pthread seqs loglikelihood: "
 	    << f_seqs.pthread_forward(pi, A, B)
 	    << std::endl;
+  std::cout << "mr_pthread loglikelihood: "
+     	    << f_seqs.mr_pthread_forward(pi, A, B)
+     	    << std::endl;
 
   // std::vector<unsigned> viterbi_path;
   // double viterbi_ll = viterbi("example.seq", pi, A, B, viterbi_path);
