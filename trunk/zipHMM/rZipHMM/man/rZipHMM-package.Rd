@@ -30,7 +30,7 @@ structure for later use.
 \tabular{ll}{
 Package: \tab rZipHMM\cr
 Type: \tab Package\cr
-Version: \tab 1.0\cr
+Version: \tab 1.1.0\cr
 Date: \tab 2014-01-09\cr
 License: \tab LGPL\cr
 }
@@ -41,10 +41,12 @@ viterbi(seqFilename, hmm) computes the Viterbi path and the log-likelihood of th
 posteriorDecoding(seqFilename, hmm) computes the posterior decoding table the posterior decoding (sequence of states) of the sequence in seqFilename. hmm should be a list on the form list("pi" = ..., "A" = ..., "B" = ...). The table and the decoding are returned in a list: list("path" = ..., "table" = ...)
 Forwarder$new() creates a new non-initialized Forwarder object.
 Forwarder$readSeq(seqFilename, alphabetSize, nStatesSave = NULL, minNoEvals = 1) preprocesses the sequence in seqFilename and saves the corresponding data structure in the Forwarder object. alphabetSize should be the size of the alphabet used in the input sequence. nStatesSave should contain the model sizes that the data structure will likely used on in a vector. If it is empty or NULL, the data structure will be optimized for 2 states (longer preprocessing time). minNoEvals should be the expected number of time the data structure will be reused.
+Forwarder$readSeqDirectory(dirname, alphabetSize, nStatesSave = NULL, minNoEvals = 1) preprocesses the sequences in the directory dirname and saves the corresponding data structure in the Forwarder object. alphabetSize should be the size of the alphabet used in the input sequences. nStatesSave should contain the model sizes that the data structure will likely be used on in a vector. If it is empty or NULL, the data structure will be optimized for 2 states (longer preprocessing time). minNoEvals should be the expected number of time the data structure will be reused.
 Forwarder$readFromDirectory(directory, nStates = NULL) reads the saved data structure of an earlier preprocessing from disk. The entire data structure is read if nStates is NULL, while only the sub data structure corresponding to nStates is read if a modes size is given.
 Forwarder$writeToDirectory(directory) writes the data structure of a preprocessed sequence to disk.
 Forwarder$forward(hmm) computes the likelihood of a preprocessed sequence in a specific HMM. hmm should be a list on the form list("pi" = ..., "A" = ..., "B" = ..., ...)
-Forwarder$ptforward(hmm, deviceFilename = NULL) is a parallelized version of Forwarder$forward. It computes the likelihood of a preprocessed sequence in a specific HMM. hmm should be a list on the form list("pi" = ..., "A" = ..., "B" = ..., ...).
+Forwarder$ptforward(hmm, deviceFilename = NULL) is a parallelized version of Forwarder$forward. It computes the likelihood of a preprocessed sequence in a specific HMM. hmm should be a list on the form list("pi" = ..., "A" = ..., "B" = ..., ...). If several input sequences were used, the parallelization works across the lengths of the sequences. You want to use this method if you have few very long sequences.
+Forwarder$ptforward(hmm, deviceFilename = NULL) is a parallelized version of Forwarder$forward. It computes the likelihood of a preprocessed sequence in a specific HMM. hmm should be a list on the form list("pi" = ..., "A" = ..., "B" = ..., ...). If several input sequences were used, the parallelization works across set of sequences. You want to use this function if you have a lot of sequences regardless of their lengths.
 Forwarder$getOrigSeqLength() returns the length of the original sequence.
 Forwarder$getOrigAlphabetSize() returns the alphabet size of the original sequence.
 Forwarder$getSeqLength(noStates) returns the length of the preprocessed sequence corresponding to a model with noStates states.

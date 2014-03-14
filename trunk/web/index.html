@@ -121,12 +121,12 @@ the following way:
 <h2><a id="files">Files</a></h2>
 
 <ul>
-  <li>Source: <a href="files/zipHMM-1.0.2.tar.gz">zipHMM-1.0.2.tar.gz</a></li>
+  <li>Source: <a href="files/zipHMM-1.1.0.tar.gz">zipHMM-1.1.0.tar.gz</a></li>
     <li>Mac OS X
     <ul>
       <li>R package: <a
-  href="files/OSX/rZipHMM_1.0.2.tar.gz">rzipHMM_1.0.2.tar.gz</a>, <a href="files/calibrate.r">calibrate.r</a></li>
-      <li>Python module: <a href="files/OSX/pyZipHMM_1.0.2.zip">pyZipHMM_1.0.2.zip</a></li>
+  href="files/OSX/rZipHMM_1.1.0.tar.gz">rzipHMM_1.1.0.tar.gz</a>, <a href="files/calibrate.r">calibrate.r</a></li>
+      <li>Python module: <a href="files/OSX/pyZipHMM_1.1.0.zip">pyZipHMM_1.1.0.zip</a></li>
     </ul>
   </li>
 </ul>
@@ -143,14 +143,14 @@ $ svn checkout http://ziphmm.googlecode.com/svn/trunk/ zipHMM-read-only
 <h3><a id="install_binaries_from_source">Install binaries from source</a></h3>
 
 <p>To install zipHMM from source on Linux or Mac OS X download <a
- href="files/zipHMM-1.0.2.tar.gz">zipHMM-1.0.2.tar.gz</a> and execute
+ href="files/zipHMM-1.1.0.tar.gz">zipHMM-1.1.0.tar.gz</a> and execute
 the following commands in a terminal:</p>
 
 <p>
 <pre class="snip">
 $ cd &lt;path-to-file&gt;
-$ tar -xvf zipHMM-1.0.2.tar.gz
-$ cd zipHMM-1.0.2/
+$ tar -xvf zipHMM-1.1.0.tar.gz
+$ cd zipHMM-1.1.0/
 $ cmake .
 $ make
 $ bin/calibrate
@@ -180,26 +180,26 @@ target="blank">http://cmake.org/</a>.</p>
 
 <h3><a id="mac_os_x">Mac OS X</a></h3> <p> To install the python
 module <code>pyZipHMM</code> on Mac OS X download <a
- href="files/OSX/pyZipHMM_1.0.2.zip">pyZipHMM_1.0.2.zip</a> and execute
+ href="files/OSX/pyZipHMM_1.1.0.zip">pyZipHMM_1.1.0.zip</a> and execute
 the following commands in a terminal:</p>
 
 <p>
 <pre class="snip">
 $ cd &lt;path-to-file&gt;
-$ unzip pyZipHMM_1.0.2.zip
-$ cd pyZipHMM_1.0.2
+$ unzip pyZipHMM_1.1.0.zip
+$ cd pyZipHMM_1.1.0
 $ python setup.py install
 </pre>
 </p>
 
 <p>To install the R package <code>rZipHMM</code> on Mac OS X download
-<a href="files/OSX/rZipHMM_1.0.2.tar.gz">rZipHMM_1.0.2.tar.gz</a> and
+<a href="files/OSX/rZipHMM_1.1.0.tar.gz">rZipHMM_1.1.0.tar.gz</a> and
 execute the following commands in a terminal:</p>
 
 <p>
 <pre class="snip">
 $ cd &lt;path-to-file&gt;
-$ R CMD INSTALL rZipHMM_1.0.2.tar.gz
+$ R CMD INSTALL rZipHMM_1.1.0.tar.gz
 </pre>
 </p>
 
@@ -321,6 +321,47 @@ multi-threaded parallelisation instead, one simply uses the
 parameters, instead.
 </p>
 
+<p>
+A dataset often consists of several observed sequences for which the
+total loglikelihood is obtained as the sum of the loglikelihoods for
+each sequence. zipHMM makes this computation fast and easy by
+compressing the given set of sequences together and computing the
+loglikelihoods in parallel. This functionality is illustrated in the
+following <a href="files/multiple_sequence_example.zip">example</a>:
+</p>
+
+<pre class="brush: py;">
+from pyZipHMM import *
+
+f = Forwarder.fromSequenceDirectory(dirname = "sequences", alphabetSize = 3, minNoEvals = 10)
+f.writeToDirectory("example_out")
+
+pi, A, B = readHMM("example.hmm")
+
+print "loglikelihood: ", f.forward(pi, A, B)
+</pre>
+
+<p>
+
+where a Forwarder object is initialized from a set of sequences in the
+directory <code>sequences</code> using the method
+<code>fromSequenceDirectory</code>. Appart from this the loglikelihood
+is computed as in the previous example.
+
+<p>
+The <code>forward</code> method of Forwarder objects comes in three
+flavours: <code>f.forward</code>, <code>f.ptforward</code> and
+<code>f.mrforward</code>. <code>f.forward</code> computes the
+loglikelihood of an HMM sequentially, while <code>f.ptforward</code>
+uses pthreads (pt) to parallelize the computation across the length of each
+sequence and <code>f.mrforward</code> parallelizes the computation on
+the number of sequences in a map-reduce (mr) fashion. If you have a
+few very long sequences you want to use <code>f.ptforward</code>, but
+if you have lots of sequences you want to use <code>f.mrforward</code>
+regardless of their lengths. All three methods have exactly the same
+signature.
+</p>
+
 <h2><a id="using_the_R_bindings">Using the R bindings</a></h2>
 
 <p>The following <a href="files/example.zip">example</a> is equivalent
@@ -383,6 +424,36 @@ f = Forwarder$new()
 f$readFromDirectory("example_out")
 </pre>
 
+<p>
+To compute the loglikelihood of a dataset consisting of multiple
+observed sequences in one go, the <code>f$readSeqDirectory(...)</code>
+method can be used to build a Forwarder object based on the entire
+dataset (not only one sequence), as in this <a
+ href="files/multiple_sequence_example.zip">example</a>:
+</p>
+
+<pre class="brush: R;">
+library('rZipHMM')
+
+f = Forwarder$new()
+f$readSeqDirectory(dirname = "sequences", alphabetSize = 3, minNoEvals = 10)
+f$writeToDirectory("example_out")
+
+hmm = readHMM("example.hmm")
+
+cat("loglikelihood:", f$forward(hmm), "\n")
+</pre>
+
+<p>
+To gain more speed, use one of the parallelized versions of
+<code>f$forward</code>: <code>f$ptforward(...)</code> uses pthreads (pt) to
+parallelize the computation across the length of each sequence, and
+<code>f$mrforward(...)</code> parallelizes the computation on the number of
+sequences in a map-reduce (mr) fashion. If you have a few very long
+sequences you want to use <code>f$ptforward(...)</code>, but if you have
+lots of sequences you want to use <code>f$mrforward(...)</code> regardless
+of their lengths. All three methods have exactly the same signature.
+</p>
 
 <h2><a id="using_the_library_from_cpp">Using the library from C++</a></h2>
 
@@ -480,6 +551,49 @@ To read a data structure that has been saved previously the method
 Forwarder f;
 f$read_from_directory("example_out");
 </pre>
+
+<p>
+To compute the loglikelihood of a dataset consisting of multiple
+observed sequences in one go, the
+<code>f.read_seq_directory(...)</code> method can be used to build a
+Forwarder object based on the entire dataset (not only one sequence),
+as in this <a href="files/multiple_sequence_example.zip">example</a>:
+</p>
+
+<pre class="brush: cpp;">
+#include "zipHMM/hmm_io.hpp"
+#include "zipHMM/forwarder.hpp"
+#include "zipHMM/matrix.hpp"
+
+#include <iostream>
+
+using namespace zipHMM;
+
+int main(int argc, char **args) {
+  Forwarder f;
+  size_t alphabet_size = 3;
+  f.read_seq_directory("sequences", alphabet_size);
+  f.write_to_directory("example_out");
+
+  Matrix pi, A, B;
+  read_HMM(pi, A, B, "example.hmm");
+
+  std::cout << "log-likelihood: " << f.forward(pi, A, B) << std::endl;
+  return 0;
+}
+</pre>
+
+<p>
+To gain more speed, use one of the parallelized versions of
+<code>f.forward</code>: <code>f.pthread_forward(...)</code> uses
+pthreads to parallelize the computation across the length of each
+sequence, and <code>f.mr_pthread_forward(...)</code> parallelizes the
+computation on the number of sequences in a map-reduce (mr)
+fashion. If you have a few very long sequences you want to use
+<code>f.pthread_forward(...)</code>, but if you have lots of sequences you
+want to use <code>f.mr_pthread_forward(...)</code> regardless of their
+lengths. All three methods have exactly the same signature.
+</p>
 
 <h2><a id="file_formats">File formats</a></h2>
 

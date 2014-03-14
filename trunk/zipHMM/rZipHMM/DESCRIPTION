@@ -1,7 +1,7 @@
 Package: rZipHMM
 Type: Package
 Title: zipHMM is a package for working with general discrete hidden Markov models, greatly speeding up the likelihood computation by using the zipForward algorithm.
-Version: 1.0.2
+Version: 1.1.0
 Date: 2014-01-08
 Author: Andreas Sand
 Maintainer: Andreas Sand <asand@birc.au.dk>
