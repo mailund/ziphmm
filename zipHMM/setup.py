@@ -18,7 +18,7 @@ class calibrateRunner(build):
         
 
 setup(name = "zipHMM",
-      version = "1.0.2",
+      version = "1.1.0",
       description = "zipHMM is a package for working with general discrete hidden Markov models, greatly speeding up the likelihood computation by using the zipForward algorithm.",
       author = "Andreas Sand",
       author_email = "asand@birc.au.dk",

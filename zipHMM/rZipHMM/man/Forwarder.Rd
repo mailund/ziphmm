@@ -34,7 +34,7 @@ writeHMM
 }
 \usage{
 f1 = Forwarder$new()
-f1$readSeq(seqFilename = "example.seq", alphabetSize = 3, minNoEvals = 10)
+f1$readSeqDirectory(dirname = "sequences/", alphabetSize = 3, minNoEvals = 10)
 
 f1$writeToDirectory("example_out")
 
@@ -44,8 +44,9 @@ f2 = Forwarder$new()
 f2$readFromDirectory(directory = "example_out")
 hmm = readHMM("example.hmm")
 
-ll = f2$forward(hmm)
-#ll = f2$ptforward(hmm) # parallelized version
+ll = f2$forward(hmm) # sequential implementation
+#ll = f2$ptforward(hmm) # parallelization across the length of the sequences
+#ll = f2$mrforward(hmm) # parallelization across the set of sequences
 cat("loglikelihood:", ll, "\n")
 
 l = f2$getOrigSeqLength()
