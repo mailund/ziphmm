@@ -628,7 +628,8 @@ namespace zipHMM {
 	  dirnames.push_back(epdf->d_name);
 	}
       }
-    } 
+    }
+    closedir(dpdf);
     
     for(std::vector<std::string>::iterator it = dirnames.begin(); it != dirnames.end(); ++it) {
       std::string dirname = (*it);
@@ -656,6 +657,7 @@ namespace zipHMM {
 	}
       }
     }
+    closedir(dpdf);
 
     for(std::vector<std::string>::const_iterator it = filenames.begin(); it != filenames.end(); ++it) {
       std::string path = no_states_dir + "/" + (*it);
