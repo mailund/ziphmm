@@ -502,10 +502,10 @@ namespace zipHMM {
   void Forwarder::write_to_directory(const std::string &directory) const {
     std::string wd = get_working_directory();
     std::string absolute_dir_name;
-    if(!directory[0] != '/')
-      absolute_dir_name = wd + "/" + directory;
-    else
+    if(directory[0] == '/')
       absolute_dir_name = directory;
+    else
+      absolute_dir_name = wd + "/" + directory;
     std::string data_structure_filename = absolute_dir_name + "/data_structure";
     std::string nStates2seq_absolute_dir_name = absolute_dir_name + "/nStates2seq";
     
@@ -576,7 +576,7 @@ namespace zipHMM {
     for(std::map<size_t, size_t>::const_iterator it = nStates2alphabet_size.begin(); it != nStates2alphabet_size.end(); ++it)
       out << (*it).first << " " << (*it).second <<std::endl;
 
-    out << "symbol2pair" << std::endl;
+    out << "symbol2pair" << std::endl;;
     for(std::map<unsigned, s_pair>::const_iterator it = symbol2pair.begin(); it != symbol2pair.end(); ++it)
       out << (*it).first << " " << (*it).second.first << " " << (*it).second.second <<std::endl;
   }  
