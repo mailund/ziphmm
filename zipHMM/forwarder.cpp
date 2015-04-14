@@ -345,7 +345,7 @@ namespace zipHMM {
     // find alphabet and seqs for given number of states
     size_t no_states = A.get_width();
     size_t alphabet_size = 0;
-    const std::vector<std::vector< unsigned> > *sequences;
+    const std::vector<std::vector< unsigned> > *sequences = 0;
     for(std::map<size_t, std::vector<std::vector<unsigned> > >::const_iterator it = nStates2seqs.begin(); it != nStates2seqs.end(); ++it) {
       if(it->first >= no_states) {
 	sequences = &(it->second);
@@ -436,7 +436,7 @@ namespace zipHMM {
 
     double *symbol2scale;
     Matrix *symbol2matrix;
-    const std::vector<std::vector< unsigned> > *sequences;
+    const std::vector<std::vector< unsigned> > *sequences = 0;
     std::vector<ProcessingDevice*> devices;
     size_t numberOfDevices;
     double loglikelihood;
