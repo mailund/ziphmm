@@ -1,33 +1,34 @@
-################## Content ##################
 
-# Build procedure
-# Getting started
-# Using the C++ library
-# Using the Python library
-# Encoding HMMs
-### HMM example
-### C++ example
-### Python example
-# Encoding sequences
-# Executables
-### calibrate
-### build_forwarder
-### forward
-### generate_hmm
-### generate_seq
-# Contact
+* Build procedure
+* Getting started
+* Using the C++ library
+* Using the Python library
+* Encoding HMMs
+	* HMM example
+	* C++ example
+	* Python example
+* Encoding sequences
+* Executables
+	* calibrate
+	* build_forwarder
+	* forward
+	* generate_hmm
+	* generate_seq
+* Contact
 
-############### Build procedure: ############### 
+# Build procedure: 
 
 To build and install the library, unzip the directory and execute the
 following commands in a terminal:
 
+```bash
 $ cd <path to library>/zipHMM-1.0.1/
 zipHMM-1.0.1 $ cmake .
 zipHMM-1.0.1 $ make
 zipHMM-1.0.1 $ bin/calibrate
 zipHMM-1.0.1 $ make test
 zipHMM-1.0.1 $ make install
+```
 
 To build in OS X, the Accellerate framework is required (see
 https://developer.apple.com/performance/accelerateframework.html). This
@@ -40,7 +41,9 @@ look for it at /com/extra/ATLAS/3.9.84. This will most likely not work
 on your machine. You may therefore have to change line 11 in
 zipHMM/CmakeLists.txt:
 
+```bash
   set(ATLAS_ROOT "/com/extra/ATLAS/3.9.84")
+```
 
 If you are using a different implementation of BLAS than Atlas you
 will have to do a few extra simple changes in zipHMM/CMakelists.txt -
@@ -51,17 +54,19 @@ parallelized algorithm and saves the number in a file (default is
 ~/.ziphmm.devices).
 
 
-############## Getting started #################
+# Getting started
 
 Have a look at zipHMM/cpp_example.cpp and zipHMM/python_example.cpp
 and try running the following commands from the root directory.
 
+```bash
 $ zipHMM-0.0.1 $ bin/cpp_example
 	
 $ zipHMM-0.0.1 $ cd zipHMM/
 $ zipHMM $ python python_example.py
+```
 
-############ Using the C++ library #############
+# Using the C++ library
 
 The main class in the library is Forwarder (forwarder.hpp and
 forwarder.cpp). Objects of this class represents an observed sequence
@@ -69,17 +74,20 @@ that have been preprocessed such that the likelihood of the sequence
 can be obtained from a given HMM (pi, A, B) very fast. To build a new
 forwarder object just call the empty constructor:
 
+```c
 Forwarder();
+```
 
 and to read in a sequence call one of the two read_seq methods:
 
+```c
 void Forwarder::read_seq(const std::string &seq_filename, const size_t alphabet_size, 
                          std::vector<size_t> nStatesSave, const size_t min_no_eval = 1);
 void Forwarder::read_seq(const std::string &seq_filename, const size_t alphabet_size, 
      			 const size_t no_states, const size_t min_no_eval);
 void Forwarder::read_seq(const std::string &seq_filename, const size_t alphabet_size, 
                          const size_t min_no_eval = 1)
-
+```
 
 Here seq_filename is the filename of the file containing the observed
 sequence, alphabet_size is the size of the alphabet used in the
@@ -100,7 +108,9 @@ constructor with an empty nStates2save vector.
 
 After building an Forwarder object, it can be saved to disk using the method
 
+```c
 void write_to_directory(const std::string &directory) const;
+```
 
 Here directory should contain the path (relative to the root of the
 library) of the intended location of the datastructure.
@@ -108,8 +118,10 @@ library) of the intended location of the datastructure.
 To read a previously saved datastructure, one of the following two methods 
 can be used:
 
+```c
 void Forwarder::read_from_directory(const std::string &dirname);
 void Forwarder::read_from_directory(const std::string &directory, const size_t no_states);
+```
 
 Using the first one, the entire datastructure is being rebuilt. Using
 the second one only the datastructure matching no_states is being
@@ -121,9 +133,11 @@ data structures is most optimal for your HMM.
 Finally, to get the loglikelihood of the observed sequence in a
 specific model, one of the following methods are used:
 
+```c
 double Forwarder::forward(const Matrix &pi, const Matrix &A, const Matrix &B) const;
 double Forwarder::pthread_forward(const Matrix &pi, const Matrix &A, const Matrix &B, 
                                   const std::string &device_filename = DEFAULT_DEVICE_FILENAME) const;
+```
 
 The second method is a parallelized version of the forward algorithm,
 whereas the first one is single-threaded. pi, A and B specifies the
@@ -137,7 +151,7 @@ move the file, then leave the device_filename parameter out.
 
 See zipHMM/cpp_example.cpp for a simple example.
 
-########### Using the Python library ###########
+# Using the Python library
 
 To use the Python library in another project, copy zipHMM/pyZipHMM.py
 and zipHMM/libpyZipHMM.so to the root of your project folder after
@@ -147,31 +161,39 @@ and zipHMM/python_test.py for details on how to use the library.
 A Forwarder object can be constructed from an observed sequence in the
 following ways:
 
+```python
 from pyZipHMM import *
 f = Forwarder.fromSequence(seqFilename = "example.seq", alphabetSize = 3, minNoEvals = 500)
+```
 
 To save the datastructure to disk do as follows:
 
+```python
 f.writeToDirectory("example_preprocessed")
+```
 
 To read a previously saved datastructure from disk use either of the
 two methods:
 
+```python
 f2 = Forwarder.fromDirectory(directory = "../example_out")
 f2 = Forwarder.fromDirectory(directory = "../example_out", nStates = 3)
+```
 
 Finally, to evaluate the loglikelihood of the sequence in a given model
 (matrices pi, A and B) use either of
 
+```python
 loglikelihood = f.forward(pi, A, B)
 loglikelihood = f.ptforward(pi, A, B)
+```
 
 where the second method is parallelized. The three matrices pi, A and B
 can be read from a file or build in Python as described below.
 
 See zipHMM/python_example.py for an example.
 
-################ Encoding HMMs #################
+# Encoding HMMs
 
 An HMM consists of three matrices: 
 
@@ -188,8 +210,9 @@ These three matrices can either be build in the code (in C++ or
 Python) or they can be encoded in a text file. The format of the text
 file is as follows:
 
-## HMM example ######
-
+# HMM example 
+---
+```
 no_states
 3
 alphabet_size
@@ -206,23 +229,28 @@ B
 0.1 0.2 0.3 0.4
 0.2 0.3 0.4 0.1
 0.3 0.4 0.1 0.2
-
-#####################
+```
+---
 
 To read and write HMMs from and to files in C++, use the methods
 
+```c
 void read_HMM(Matrix &resultInitProbs, Matrix &resultTransProbs, Matrix &resultEmProbs, const std::string &filename);
 void write_HMM(const Matrix &initProbs, const Matrix &transProbs, const Matrix &emProbs, const std::string &filename);
+```
 
 To read and write HMMs from and to files in Python, use the functions
 
+```python
 readHMM(filename) -> (pi, A, B)
 writeHMM(pi, A, B, filename) -> None
+```
 
 To build a matrix in C++ do as illustrated in the following example:
 
-## C++ example ######
+## C++ example
 
+```c
 #include "matrix.hpp"
 
 size_t nRows = 3;
@@ -232,13 +260,13 @@ m(0,0) = 0.1;
 m(0,1) = 0.2;
 ...
 m(2,3) = 0.2;
-
-#####################
+```
 
 To build a matrix in Python do as illustrated here:
 
-## Python example ####
+## Python example
 
+```python
 import pyZipHMM
 
 nRows = 3
@@ -248,11 +276,9 @@ m[0,0] = 0.1
 m[0,1] = 0.2
 ...
 m[2,3] = 0.2
+```
 
-#####################
-
-
-############## Encoding sequences ##############
+# Encoding sequences
 
 The alphabet of observables are encoded using integers. Thus if the
 size of the alphabet is M, the observables are encoded using 0, 1, 2,
@@ -261,18 +287,18 @@ the single observations are seperated by whitespace. See example.seq
 for an example.
 
 
-################ Executables ###################
+# Executables
 
 ## calibrate
 
-Usage: bin/calibrate
+Usage: `bin/calibrate`
 
 Finds the optimal number of threads to use in the parallelized version
 of the forward algorithm.
 
 ## build_forwarder
 
-Usage: bin/build_forwarder -s <sequence filename> -M <alphabet size> -o <output directory> [-N <number of states>]*
+Usage: `bin/build_forwarder -s <sequence filename> -M <alphabet size> -o <output directory> [-N <number of states>]*`
 
 Builds a Forwarder object from the sequence in the file specified in
 <sequence filename> and writes it to the directory specified in
@@ -283,19 +309,23 @@ separated integers between 0 and <alphabet size> - 1. The list of HMM
 sizes to generate the data structure for can be specified using the -N parameter.
 
 Examples:
+```bash
 bin/build_forwarder -s example.seq -M 3 -o example_out
 bin/build_forwarder -s example.seq -M 3 -o example_out -N 2
 bin/build_forwarder -s example.seq -M 3 -o example_out -N 2 -N 4 -N 8 -N 16
+```
 
 ## forward
 
-Usage: bin/forward (-s <sequence filename> -m <HMM filename> [-e #expected forward calls] [-o <output directory>] ) | (-d <preprocessing directory> -m <HMM filename>) [-p]
+Usage: `bin/forward (-s <sequence filename> -m <HMM filename> [-e #expected forward calls] [-o <output directory>] ) | (-d <preprocessing directory> -m <HMM filename>) [-p]`
 
 Runs the forward algorithm and outputs the loglikelhood. This
 executable can be called in two different ways:
 
+```bash
 bin/forward -s example.seq -m example.hmm -e 500 -o example_out
 bin/forward -d example_out/ -m example.hmm
+```
 
 In the first example the loglikelihood is evaluated based on the
 observed sequence in example.seq and the HMM specified in
@@ -306,25 +336,27 @@ used to use the parallelized version. In the first example the user
 can optionally choose to save the data structure in eg. example_out/
 using the -o parameter:
 
+```bash
 bin/forward -s example.seq -m example.hmm -e 500 -o example_out/
+```
 
 ## generate_hmm
 
-Usage: bin/generate_hmm <number of states> <alphabet size> <HMM filename>
+Usage: `bin/generate_hmm <number of states> <alphabet size> <HMM filename>`
 
 Generates a random HMM with <number of states> states and <alphabet
 size> observables, and saves it to <HMM filename>.
 
 ## generate_seq
 
-Usage: bin/generate_seq <HMM filename> <length> <observed sequence output filename> <state sequence output filename>
+Usage: `bin/generate_seq <HMM filename> <length> <observed sequence output filename> <state sequence output filename>`
 
 Given an HMM specified in <HMM filename>, runs the HMM for <length>
 iterations and saves the resulting sequence of observables to
 <observed sequence output filename> and the resulting sequence of
 hidden states to <state sequence output filename>.
 
-################## Contact #####################
+# Contact
 
 If you encounter any problems or have questions about using this
 software, please contact 
