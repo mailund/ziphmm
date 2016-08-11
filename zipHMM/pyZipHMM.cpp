@@ -1,3 +1,5 @@
+#include <Python.h>
+
 #include "forwarder.hpp"
 #include "simple_forwarder.hpp"
 #include "matrix.hpp"
@@ -11,7 +13,6 @@
 #include <fstream>
 #include <string>
 #include <new>
-#include <Python.h>
 
 // HMM_IO
 extern "C" {

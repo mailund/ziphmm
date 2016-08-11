@@ -1,4 +1,5 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+set(CMAKE_CXX_FLAGS "-std=c++0x")
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 include_directories(${zipHMM_SOURCE_DIR})
@@ -70,6 +71,7 @@ endif(PYTHONLIBS_FOUND)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 find_package(LibR)
 if(LIBR_FOUND)
+  set(PKG_CXXFLAGS "-std=c++0x")
   message(STATUS "R bindings will be compiled.")
   include_directories(${LIBR_INCLUDE_DIRS})
   message(STATUS "R include: ${LIBR_INCLUDE_DIRS}")

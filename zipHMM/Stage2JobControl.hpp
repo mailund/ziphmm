@@ -4,6 +4,7 @@
 #include "debug.hpp"
 
 #include <vector>
+#include <cstdint>
 
 namespace zipHMM {
 
