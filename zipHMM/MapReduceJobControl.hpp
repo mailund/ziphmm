@@ -3,6 +3,7 @@
 
 #include "debug.hpp"
 
+#include <cstdint>
 #include <vector>
 
 namespace zipHMM {

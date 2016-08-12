@@ -1,7 +1,7 @@
 #ifndef TIMER_HPP
 #define TIMER_HPP
 
-
+#include <cstdint>
 
 #if defined WIN32
 
