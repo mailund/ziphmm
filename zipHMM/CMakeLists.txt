@@ -1,5 +1,18 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
-set(CMAKE_CXX_FLAGS "-std=c++11")
+
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    # before gcc 4.8 we might get away with -std=c++0x 
+    # but after we need -std=c++11
+    if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.8)
+      set(CPP_STD_FLAG "-std=c++0x")
+    else()
+      set(CPP_STD_FLAG "-std=c++11")
+    endif()
+#else()
+#    message(WARNING "You are using an unsupported compiler! Compilation has only been tested with Clang and GCC.")
+endif()
+
+set(CMAKE_CXX_FLAGS ${CPP_STD_FLAG})
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 include_directories(${zipHMM_SOURCE_DIR})
@@ -71,7 +84,7 @@ endif(PYTHONLIBS_FOUND)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 find_package(LibR)
 if(LIBR_FOUND)
-  set(PKG_CXXFLAGS "-std=c++11")
+  set(PKG_CXXFLAGS CPP_STD_FLAG)
   message(STATUS "R bindings will be compiled.")
   include_directories(${LIBR_INCLUDE_DIRS})
   message(STATUS "R include: ${LIBR_INCLUDE_DIRS}")
