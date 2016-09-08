@@ -79,6 +79,10 @@ else(PYTHONLIBS_FOUND)
   message(STATUS "Python bindings will not be compiled.")
 endif(PYTHONLIBS_FOUND)
 
+if(PYTHONLIBS_FOUND)
+  add_test(pyZipHMM "python" "../zipHMM/python_test.py")
+endif(PYTHONLIBS_FOUND)
+
 
 ## R MODULE
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
@@ -101,6 +105,11 @@ if(LIBR_FOUND)
 else(LIBR_FOUND)
   message(STATUS "R bindings will not be compiled.")
 endif(LIBR_FOUND)
+
+if(LIBR_FOUND)
+  add_test(rZipHMM "${LIBR_EXECUTABLE}" "--slave -f ../zipHMM/test_rZipHMM.r")
+endif(LIBR_FOUND)
+
 
 ## EXECUTABLES
 add_executable(build_forwarder build_forwarder.cpp)
@@ -170,13 +179,6 @@ add_test(
   COMMAND ${EXECUTABLE_OUTPUT_PATH}/test_forwarder
   )
 
-if(PYTHONLIBS_FOUND)
-  add_test(pyZipHMM "python" "../zipHMM/python_test.py")
-endif(PYTHONLIBS_FOUND)
-
-if(LIBR_FOUND)
-  add_test(rZipHMM "${LIBR_EXECUTABLE}" "--slave -f ../zipHMM/test_rZipHMM.r")
-endif(LIBR_FOUND)
 
 ## INSTALLATION
 file(GLOB zipHMM_hpp *.hpp)

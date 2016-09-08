@@ -7,3 +7,16 @@ Makefile
 _CPack_Packages
 CMakeFiles
 Testing
+bin
+
+zipHMM/libpyZipHMM.so
+zipHMM/librZipHMM.so
+zipHMM/libzipHMM.so
+zipHMM/rZipHMM.o
+zipHMM/pyZipHMM/__init__.pyc
+zipHMM/pyZipHMM/libpyZipHMM.so
+zipHMM/pyZipHMM/pyZipHMM.pyc
+zipHMM/rZipHMM/librZipHMM.so
+zipHMM/rZipHMM/libzipHMM.so
+zipHMM/rZipHMM/src/librZipHMM.so
+zipHMM/rZipHMM/src/libzipHMM.so
