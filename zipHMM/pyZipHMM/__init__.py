@@ -1,1 +1,1 @@
-from pyZipHMM import *
+from .pyZipHMM import *

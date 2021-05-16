@@ -6,7 +6,7 @@ from subprocess import call
 
 
 def printUsage(cmd):
-    print "Usage: python ", cmd, "<hmm filename <seq filename>"
+    print("Usage: python ", cmd, "<hmm filename <seq filename>")
 
 if __name__ == "__main__":
     if not len(sys.argv) == 3:
@@ -22,5 +22,5 @@ if __name__ == "__main__":
 
     f = Forwarder(seqFilename = seqFilename, nStates = nStates, nObservables = nObservables)
     loglik = f.forward(pi, A, B)
-    print nStates, nObservables, loglik
+    print(nStates, nObservables, loglik)
 
