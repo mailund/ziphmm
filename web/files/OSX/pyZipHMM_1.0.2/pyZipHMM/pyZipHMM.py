@@ -4,7 +4,7 @@ from os import path
 
 try:
     d = path.dirname(__file__)
-    lib = cdll.LoadLibrary(b"%s/libpyZipHMM.so" % (d))
+    lib = cdll.LoadLibrary("%s/libpyZipHMM.so" % (d))
     library_location = "%s/libpyZipHMM.so" % (d)
 except OSError:
     python_lib = get_python_lib()
@@ -19,21 +19,21 @@ except OSError as e:
     
 
 ## HMM IO
-def readHMMspec(filename):
+def readHMMspec(filename.encode('utf-8')):
     nStates = c_uint()
     nObservables = c_uint()
-    lib.c_read_HMM_spec(byref(nStates), byref(nObservables), c_char_p(filename))
+    lib.c_read_HMM_spec(byref(nStates), byref(nObservables), c_char_p(filename.encode('utf-8')))
     return (nStates, nObservables)
 
-def readHMM(filename):
+def readHMM(filename.encode('utf-8')):
     pi = Matrix()
     A = Matrix()
     B = Matrix()
-    lib.c_read_HMM(pi.obj, A.obj, B.obj, c_char_p(filename))
+    lib.c_read_HMM(pi.obj, A.obj, B.obj, c_char_p(filename.encode('utf-8')))
     return (pi, A, B)
 
 def writeHMM(pi, A, B, filename):
-    lib.c_write_HMM(pi.obj, A.obj, B.obj, c_char_p(filename))
+    lib.c_write_HMM(pi.obj, A.obj, B.obj, c_char_p(filename.encode('utf-8')))
     
 
 ## Forwarder
@@ -322,7 +322,7 @@ if __name__ == "__main__":
     assert m.getWidth() == 3
 
     print("Calling readHMM method")
-    (pi, A, B) = readHMM(b"test_data/test1.hmm")
+    (pi, A, B) = readHMM("test_data/test1.hmm")
     assert pi.getHeight() == 2
     assert pi.getWidth()  == 1
     assert A.getHeight()  == 2
@@ -339,7 +339,7 @@ if __name__ == "__main__":
     assert abs(f.forward(pi, A, B)  - -12.5671022728) < 0.001
 
     print("Calling readHMMspec method")
-    (nStates, nObservables) = readHMMspec(b"test_data/test1.hmm")
+    (nStates, nObservables) = readHMMspec("test_data/test1.hmm")
     assert nStates.value == 2
     assert nObservables.value == 2
 

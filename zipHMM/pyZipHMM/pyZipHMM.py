@@ -22,22 +22,22 @@ except OSError as e:
 def readHMMspec(filename):
     nStates = c_uint()
     nObservables = c_uint()
-    lib.c_read_HMM_spec(byref(nStates), byref(nObservables), c_char_p(filename))
+    lib.c_read_HMM_spec(byref(nStates), byref(nObservables), c_char_p(filename.encode('utf-8')))
     return (nStates, nObservables)
 
 def readHMM(filename):
     pi = Matrix()
     A = Matrix()
     B = Matrix()
-    lib.c_read_HMM(pi.obj, A.obj, B.obj, c_char_p(filename))
+    lib.c_read_HMM(pi.obj, A.obj, B.obj, c_char_p(filename.encode('utf-8')))
     return (pi, A, B)
 
 def writeHMM(pi, A, B, filename):
-    lib.c_write_HMM(pi.obj, A.obj, B.obj, c_char_p(filename))
+    lib.c_write_HMM(pi.obj, A.obj, B.obj, c_char_p(filename.encode('utf-8')))
 
 lib.c_read_seq.restype = py_object
 def readSeq(filename):
-    return lib.c_read_seq(filename)
+    return lib.c_read_seq(filename.encode('utf-8'))
     
 ## Forwarder
 lib.Forwarder_new.restype = c_void_p
@@ -62,10 +62,10 @@ class Forwarder(object):
         if nStatesSave != None:
             arr = ( c_uint * len(nStatesSave) )()
             arr[:] = nStatesSave
-            lib.Forwarder_read_seq(forwarder.obj, c_char_p(seqFilename), alphabetSize, arr, len(nStatesSave), minNoEvals)
+            lib.Forwarder_read_seq(forwarder.obj, c_char_p(seqFilename.encode('utf-8')), alphabetSize, arr, len(nStatesSave), minNoEvals)
         else:
             arr = ( c_uint * 0 )()
-            lib.Forwarder_read_seq(forwarder.obj, c_char_p(seqFilename), alphabetSize, arr, 0, minNoEvals)
+            lib.Forwarder_read_seq(forwarder.obj, c_char_p(seqFilename.encode('utf-8')), alphabetSize, arr, 0, minNoEvals)
         
         return forwarder
 
@@ -76,10 +76,10 @@ class Forwarder(object):
         if nStatesSave != None:
             arr = ( c_uint * len(nStatesSave) )()
             arr[:] = nStatesSave
-            lib.Forwarder_read_seq_directory(forwarder.obj, c_char_p(dirname), alphabetSize, arr, len(nStatesSave), minNoEvals)
+            lib.Forwarder_read_seq_directory(forwarder.obj, c_char_p(dirname.encode('utf-8')), alphabetSize, arr, len(nStatesSave), minNoEvals)
         else:
             arr = ( c_uint * 0 )()
-            lib.Forwarder_read_seq_directory(forwarder.obj, c_char_p(dirname), alphabetSize, arr, 0, minNoEvals)
+            lib.Forwarder_read_seq_directory(forwarder.obj, c_char_p(dirname.encode('utf-8')), alphabetSize, arr, 0, minNoEvals)
         
         return forwarder
 
@@ -87,9 +87,9 @@ class Forwarder(object):
     def fromDirectory(directory, nStates = None):
         forwarder = Forwarder()
         if nStates == None:
-            lib.Forwarder_read_from_directory(forwarder.obj, c_char_p(directory))
+            lib.Forwarder_read_from_directory(forwarder.obj, c_char_p(directory.encode('utf-8')))
         else:
-            lib.Forwarder_read_from_directory(forwarder.obj, c_char_p(directory), nStates)
+            lib.Forwarder_read_from_directory(forwarder.obj, c_char_p(directory.encode('utf-8')), nStates)
         return forwarder
 
     def __del__(self):
@@ -104,13 +104,13 @@ class Forwarder(object):
         if device_filename == None:
             return lib.Forwarder_pthread_forward(self.obj, pi.obj, A.obj, B.obj, "-")
         else :
-            return lib.Forwarder_pthread_forward(self.obj, pi.obj, A.obj, B.obj, device_filename)
+            return lib.Forwarder_pthread_forward(self.obj, pi.obj, A.obj, B.obj, device_filename.encode('utf-8'))
 
     def mrforward(self, pi, A, B, device_filename = None):
         if device_filename == None:
             return lib.Forwarder_mr_pthread_forward(self.obj, pi.obj, A.obj, B.obj, "-")
         else :
-            return lib.Forwarder_mr_pthread_forward(self.obj, pi.obj, A.obj, B.obj, device_filename)
+            return lib.Forwarder_mr_pthread_forward(self.obj, pi.obj, A.obj, B.obj, device_filename.encode('utf-8'))
 
     def getOrigSeqLength(self):
         return lib.Forwarder_get_orig_seq_length(self.obj)
@@ -128,7 +128,7 @@ class Forwarder(object):
         return lib.Forwarder_get_pair(self.obj, symbol)
          
     def writeToDirectory(self, directory):
-        lib.Forwarder_write_to_directory(self.obj, c_char_p(directory))
+        lib.Forwarder_write_to_directory(self.obj, c_char_p(directory.encode('utf-8')))
 
 
 ## SimpleForwarder
@@ -137,7 +137,7 @@ lib.SimpleForwarder_forward.restype = c_double
 
 class SimpleForwarder(object):
     def __init__(self, seqFilename):
-        self.obj = c_void_p(lib.SimpleForwarder_new(seqFilename))
+        self.obj = c_void_p(lib.SimpleForwarder_new(seqFilename.encode('utf-8')))
 
     def forward(self, pi, A, B):
         return lib.SimpleForwarder_forward(self.obj, pi.obj, A.obj, B.obj)
@@ -227,7 +227,7 @@ class Matrix(object):
 def posteriorDecoding(seqFilename, pi, A, B):
     pdTable = Matrix()
     pdPath = Sequence()
-    lib.c_posterior_decoding(pdPath.obj, pdTable.obj, pi.obj, A.obj, B.obj, c_char_p(seqFilename))
+    lib.c_posterior_decoding(pdPath.obj, pdTable.obj, pi.obj, A.obj, B.obj, c_char_p(seqFilename.encode('utf-8')))
     return pdPath, pdTable
 
 ## Viterbi
@@ -235,7 +235,7 @@ lib.c_viterbi.restype = c_double
 
 def viterbi(seqFilename, pi, A, B):
     viterbiPath = Sequence()
-    viterbi_ll = lib.c_viterbi(viterbiPath.obj, pi.obj, A.obj, B.obj, c_char_p(seqFilename))
+    viterbi_ll = lib.c_viterbi(viterbiPath.obj, pi.obj, A.obj, B.obj, c_char_p(seqFilename.encode('utf-8')))
     return viterbiPath, viterbi_ll
         
 ## calibrate
@@ -243,51 +243,51 @@ def calibrate(deviceFilename = None):
     if deviceFilename == None:
         lib.c_calibrate("-")
     else:
-        lib.c_calibrate(deviceFilename)
+        lib.c_calibrate(deviceFilename.encode('utf-8'))
 
 
 if __name__ == "__main__":
     print("Constructing Matrix(3,7)")
     m = Matrix(3, 7)
     print("Calling getHeight()")
-    assert m.getHeight() == 3
+    assert (m.getHeight() == 3)
     print("Calling getWidth()")
-    assert m.getWidth() == 7
+    assert (m.getWidth() == 7)
     print("Calling setitem method")
     m[1,2] = 0.5
     print("Calling getitem method")
-    assert m[1, 2] == 0.5
+    assert (m[1, 2] == 0.5)
     print("Calling reset method")
     m.reset(7,3)
-    assert m.getHeight() == 7
-    assert m.getWidth() == 3
+    assert (m.getHeight() == 7)
+    assert (m.getWidth() == 3)
 
     print("Calling readHMM method")
-    (pi, A, B) = readHMM(b"test_data/test1.hmm")
-    assert pi.getHeight() == 2
-    assert pi.getWidth()  == 1
-    assert A.getHeight()  == 2
-    assert A.getWidth()   == 2
-    assert B.getHeight()  == 2
-    assert B.getWidth()   == 2
+    (pi, A, B) = readHMM("test_data/test1.hmm")
+    assert (pi.getHeight() == 2)
+    assert (pi.getWidth()  == 1)
+    assert (A.getHeight()  == 2)
+    assert (A.getWidth()   == 2)
+    assert (B.getHeight()  == 2)
+    assert (B.getWidth()   == 2)
 
     print("Creating Forwarder object from files")
     f = Forwarder(newSeqFilename = "../new_seq.tmp", dataStructureFilename = "../data_structure.tmp")
-    assert f.getOrigAlphabetSize() == 2
-    assert f.getOrigSeqLength()    == 18
-    assert f.getNewAlphabetSize()  == 4
+    assert (f.getOrigAlphabetSize() == 2)
+    assert (f.getOrigSeqLength()    == 18)
+    assert (f.getNewAlphabetSize()  == 4)
     print("Calling forward on Forwarder object")
-    assert abs(f.forward(pi, A, B)  - -12.5671022728) < 0.001
+    assert (abs(f.forward(pi, A, B)  - -12.5671022728) < 0.001)
 
     print("Calling readHMMspec method")
-    (nStates, nObservables) = readHMMspec(b"test_data/test1.hmm")
-    assert nStates.value == 2
-    assert nObservables.value == 2
+    (nStates, nObservables) = readHMMspec("test_data/test1.hmm")
+    assert (nStates.value == 2)
+    assert (nObservables.value == 2)
 
     print("Creating Forwarder from sequence and hmm spec")
     f = Forwarder(seqFilename = "test_data/test1.seq", nStates = nStates, nObservables = nObservables)
-    assert f.getOrigAlphabetSize() == 2
-    assert f.getOrigSeqLength()    == 18
-    assert f.getNewAlphabetSize()  == 4
+    assert (f.getOrigAlphabetSize() == 2)
+    assert (f.getOrigSeqLength()    == 18)
+    assert (f.getNewAlphabetSize()  == 4)
     print("Calling forward")
-    assert abs(f.forward(pi, A, B) - -12.5671022728) < 0.001
+    assert (abs(f.forward(pi, A, B) - -12.5671022728) < 0.001)
