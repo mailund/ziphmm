@@ -40,7 +40,7 @@ class TestSequenceFunctions(unittest.TestCase):
         forwarder2a = Forwarder.fromDirectory(directory = directory + "_post")
         forwarder2b = Forwarder.fromDirectory(directory = directory + "_post", nStates = 16)
         
-        pi, A, B = readHMM("../test_data/test6.hmm");
+        pi, A, B = readHMM(b"../test_data/test6.hmm");
         
         self.assertAlmostEqual(forwarder1a.forward(pi, A, B), -10457.5211, delta=0.0001);
         self.assertAlmostEqual(forwarder1b.forward(pi, A, B), -10457.5211, delta=0.0001);
@@ -55,7 +55,7 @@ class TestSequenceFunctions(unittest.TestCase):
 
         f = Forwarder.fromSequence(seqFilename = "../test_data/test6_10000.seq", alphabetSize = 3, nStatesSave = [2, 4, 8, 16, 32, 64], minNoEvals = 10)
 
-        pi, A, B = readHMM("../test_data/test6.hmm")
+        pi, A, B = readHMM(b"../test_data/test6.hmm")
     
         self.assertAlmostEqual(f.forward(pi, A, B), -10457.5210537, delta = 0.0001)
         self.assertAlmostEqual(f.ptforward(pi, A, B), -10457.5210537, delta = 0.0001)
@@ -69,7 +69,7 @@ class TestSequenceFunctions(unittest.TestCase):
 
         f = Forwarder.fromSequenceDirectory(dirname = "../test_data/seqs_directory" , alphabetSize = 3, nStatesSave = [2, 4, 8, 16, 32, 64], minNoEvals = 10)
 
-        pi, A, B = readHMM("../test_data/multiple_seqs.hmm")
+        pi, A, B = readHMM(b"../test_data/multiple_seqs.hmm")
 
         self.assertAlmostEqual(f.forward(pi, A, B),   -52287.605268, delta = 0.0001)
         self.assertAlmostEqual(f.ptforward(pi, A, B), -52287.605268, delta = 0.0001)
@@ -84,7 +84,7 @@ class TestSequenceFunctions(unittest.TestCase):
        
         f = SimpleForwarder(seqFilename = "../test_data/test6_10000.seq")
 
-        pi, A, B = readHMM("../test_data/test6.hmm")
+        pi, A, B = readHMM(b"../test_data/test6.hmm")
     
         self.assertAlmostEqual(f.forward(pi, A, B), -10457.5210537, delta = 0.0001)
     
@@ -95,7 +95,7 @@ class TestSequenceFunctions(unittest.TestCase):
         log.debug("Testing test_nStatesSave_constructor: ")
        
         f = Forwarder.fromSequence(seqFilename = "../test_data/test6_10000.seq", alphabetSize = 3, nStatesSave = [2, 4, 8, 16, 32, 64])
-        pi, A, B = readHMM("../test_data/test6.hmm")
+        pi, A, B = readHMM(b"../test_data/test6.hmm")
     
         self.assertAlmostEqual(f.forward(pi, A, B), -10457.5210537, delta = 0.0001)
         self.assertAlmostEqual(f.ptforward(pi, A, B), -10457.5210537, delta = 0.0001)
@@ -107,15 +107,15 @@ class TestSequenceFunctions(unittest.TestCase):
         log.debug("Testing test_viterbi: ")
 
 
-        pi, A, B = readHMM("../test_data/test1.hmm")
-        viterbiPath, viterbi_ll = viterbi("../test_data/test1.seq", pi, A, B)
+        pi, A, B = readHMM(b"../test_data/test1.hmm")
+        viterbiPath, viterbi_ll = viterbi(b"../test_data/test1.seq", pi, A, B)
 
         self.assertAlmostEqual(viterbi_ll,  -15.4332, delta = 0.0001)
         self.assertEqual(viterbiPath[1], 1)
         self.assertEqual(viterbiPath[-1], 1)
 
-        pi, A, B = readHMM("../test_data/test4.hmm")
-        viterbiPath, viterbi_ll = viterbi("../test_data/test4.seq", pi, A, B)
+        pi, A, B = readHMM(b"../test_data/test4.hmm")
+        viterbiPath, viterbi_ll = viterbi(b"../test_data/test4.seq", pi, A, B)
 
         self.assertAlmostEqual(viterbi_ll,  -24.7258, delta = 0.0001)
         self.assertEqual(viterbiPath[1], 1)

@@ -4,7 +4,7 @@ from os import path
 
 try:
     d = path.dirname(__file__)
-    lib = cdll.LoadLibrary("%s/libpyZipHMM.so" % (d))
+    lib = cdll.LoadLibrary(b"%s/libpyZipHMM.so" % (d))
     library_location = "%s/libpyZipHMM.so" % (d)
 except OSError:
     python_lib = get_python_lib()
@@ -263,7 +263,7 @@ if __name__ == "__main__":
     assert m.getWidth() == 3
 
     print("Calling readHMM method")
-    (pi, A, B) = readHMM("test_data/test1.hmm")
+    (pi, A, B) = readHMM(b"test_data/test1.hmm")
     assert pi.getHeight() == 2
     assert pi.getWidth()  == 1
     assert A.getHeight()  == 2
@@ -280,7 +280,7 @@ if __name__ == "__main__":
     assert abs(f.forward(pi, A, B)  - -12.5671022728) < 0.001
 
     print("Calling readHMMspec method")
-    (nStates, nObservables) = readHMMspec("test_data/test1.hmm")
+    (nStates, nObservables) = readHMMspec(b"test_data/test1.hmm")
     assert nStates.value == 2
     assert nObservables.value == 2
 
