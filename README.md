@@ -33,8 +33,13 @@ You will run into some missing packages along the way, just keep googling and `a
 ```bash
 	$ cd <path to library>/zipHMM-1.0.1/
 	$ apt-get install python3 python3-dev
-	$ cmake .
 ```
+Check python version with `python --version`.  If it's not 3, do:
+```bash
+update-alternatives --install /usr/bin/python python /usr/bin/python3 1
+```
+Now run `cmake .` from within the zipHMM-1.0.1/ directory.
+
 2. 
 
 If you're on Ubuntu or the following make gives an error about threading-related calls not being defined to link with, then do this first:
