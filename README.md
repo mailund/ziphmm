@@ -44,15 +44,26 @@ This simply replaces all occrences of the flag "-lpthread" with "-pthread" and t
 	zipHMM-1.0.1 $ make install
 ```
 
-A successful build on Ubuntu server (running on a VirtualBox VM on Windows 10) with the slim desktop UI, should look like this:
+A successful build (the first `make` command above) on Ubuntu server (running on a VirtualBox VM on Windows 10) with the slim desktop UI, should look like this:
 ![VMBox instance of Unbuntu server with slim desktop and successful build of zipHMMlib.](https://user-images.githubusercontent.com/1606391/118394241-56572280-b5f8-11eb-9e9c-81683e6551b8.png)
 
+At the end, when you run `make install` you'll receive a print out of important locations (for useage of the library & headers), so save it to a file like so:
+
+```
+zipHMM-1.0.1 $ make install > important_install_directories.txt
+```
+
+Then you can refer back to it without having to run anything.
+
+---
 
 To build in OS X, the Accellerate framework is required (see
 https://developer.apple.com/performance/accelerateframework.html). This
 is included in the developer tools installed with XCode (see
 https://developer.apple.com/xcode/)
 
+
+---
 To build in Linux CMake must be able to find an installation of a BLAS
 implementation. For now the CMake script is set up to use Atlas and to
 look for it at /com/extra/ATLAS/3.9.84. This will most likely not work
