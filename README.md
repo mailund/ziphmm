@@ -33,7 +33,7 @@ following commands in a terminal:
 ```bash
 	zipHMM-1.0.1 $ grep -rl lpthread ./ | xargs sed -i 's/lpthread/pthread/g' 
 ```
-	This simply replaces all occrences of the flag "-lpthread" with "-pthread" and the build goes through after that!  It previously did not like the `l` in `-lpthread`.
+This simply replaces all occrences of the flag "-lpthread" with "-pthread" and the build goes through after that!  It previously did not like the `l` in `-lpthread`.
 
 3. 
 
