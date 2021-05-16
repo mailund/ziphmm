@@ -21,14 +21,27 @@
 To build and install the library, unzip the directory and execute the
 following commands in a terminal:
 
-```bash
+
+1. ```bash
 $ cd <path to library>/zipHMM-1.0.1/
 zipHMM-1.0.1 $ cmake .
-zipHMM-1.0.1 $ make
-zipHMM-1.0.1 $ bin/calibrate
-zipHMM-1.0.1 $ make test
-zipHMM-1.0.1 $ make install
 ```
+2. If you're on Ubuntu or the following make gives an error about threading-related calls not being defined to link with, then do this first:
+	```
+	grep -rl lpthread ./ | xargs sed -i 's/lpthread/pthread/g' 
+	```
+	This simply replaces all occrences of the flag "-lpthread" with "-pthread" and the build goes through after that!  It previously did not like the `l` in `-lpthread`.
+
+3. ```
+	zipHMM-1.0.1 $ make
+	zipHMM-1.0.1 $ bin/calibrate
+	zipHMM-1.0.1 $ make test
+	zipHMM-1.0.1 $ make install
+```
+
+A successful build on Ubuntu server (running on a VirtualBox VM on Windows 10) with the slim desktop UI, should look like this:
+![VMBox instance of Unbuntu server with slim desktop and successful build of zipHMMlib.](https://user-images.githubusercontent.com/1606391/118394241-56572280-b5f8-11eb-9e9c-81683e6551b8.png)
+
 
 To build in OS X, the Accellerate framework is required (see
 https://developer.apple.com/performance/accelerateframework.html). This
