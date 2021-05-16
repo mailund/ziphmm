@@ -4,7 +4,7 @@ from os import path
 
 try:
     d = path.dirname(__file__)
-    lib = cdll.LoadLibrary(b"%s/libpyZipHMM.so" % (d))
+    lib = cdll.LoadLibrary("%s/libpyZipHMM.so" % (d))
     library_location = "%s/libpyZipHMM.so" % (d)
 except OSError:
     python_lib = get_python_lib()
