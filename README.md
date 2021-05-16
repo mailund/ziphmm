@@ -397,3 +397,10 @@ If you encounter any problems or have questions about using this
 software, please post an issue here:
 	https://github.com/enjoysmath/ziphmm/issues	
 	  
+	  
+# Origination / Inventor Contact Info
+
+This repository is a direct fork of the inventors' code repository: https://github.com/mailund/ziphmm
+
+On that page is contact information for them.
+
