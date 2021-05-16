@@ -22,17 +22,22 @@ To build and install the library, unzip the directory and execute the
 following commands in a terminal:
 
 
-1. ```bash
-$ cd <path to library>/zipHMM-1.0.1/
-zipHMM-1.0.1 $ cmake .
+1. 
+
+```bash
+	$cd <path to library>/zipHMM-1.0.1/
+	zipHMM-1.0.1 $ cmake .
 ```
 2. If you're on Ubuntu or the following make gives an error about threading-related calls not being defined to link with, then do this first:
-	```
-	grep -rl lpthread ./ | xargs sed -i 's/lpthread/pthread/g' 
-	```
+
+```bash
+	zipHMM-1.0.1 $ grep -rl lpthread ./ | xargs sed -i 's/lpthread/pthread/g' 
+```
 	This simply replaces all occrences of the flag "-lpthread" with "-pthread" and the build goes through after that!  It previously did not like the `l` in `-lpthread`.
 
-3. ```
+3. 
+
+```bash
 	zipHMM-1.0.1 $ make
 	zipHMM-1.0.1 $ bin/calibrate
 	zipHMM-1.0.1 $ make test
