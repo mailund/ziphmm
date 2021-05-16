@@ -25,23 +25,23 @@ following commands in a terminal:
 1. 
 
 ```bash
-	$cd <path to library>/zipHMM-1.0.1/
-	zipHMM-1.0.1 $ cmake .
+	$ cd <path to library>/zipHMM-1.0.1/
+	$ cmake .
 ```
 2. If you're on Ubuntu or the following make gives an error about threading-related calls not being defined to link with, then do this first:
 
 ```bash
-	zipHMM-1.0.1 $ grep -rl lpthread ./ | xargs sed -i 's/lpthread/pthread/g' 
+	$ grep -rl lpthread ./ | xargs sed -i 's/lpthread/pthread/g' 
 ```
 This simply replaces all occrences of the flag "-lpthread" with "-pthread" and the build goes through after that!  It previously did not like the `l` in `-lpthread`.
 
 3. 
 
 ```bash
-	zipHMM-1.0.1 $ make
-	zipHMM-1.0.1 $ bin/calibrate
-	zipHMM-1.0.1 $ make test
-	zipHMM-1.0.1 $ make install
+	$ make
+	$ bin/calibrate
+	$ make test
+	$ make install
 ```
 
 A successful build (the first `make` command above) on Ubuntu server (running on a VirtualBox VM on Windows 10) with the slim desktop UI, should look like this:
@@ -50,7 +50,7 @@ A successful build (the first `make` command above) on Ubuntu server (running on
 At the end, when you run `make install` you'll receive a print out of important locations (for useage of the library & headers), so save it to a file like so:
 
 ```
-zipHMM-1.0.1 $ make install > important_install_directories.txt
+$ make install > important_install_directories.txt
 ```
 
 Then you can refer back to it without having to run anything.
@@ -89,10 +89,10 @@ Have a look at zipHMM/cpp_example.cpp and zipHMM/python_example.cpp
 and try running the following commands from the root directory.
 
 ```bash
-$ zipHMM-0.0.1 $ bin/cpp_example
+$ bin/cpp_example
 	
-$ zipHMM-0.0.1 $ cd zipHMM/
-$ zipHMM $ python python_example.py
+$ cd zipHMM/
+$ python python_example.py
 ```
 
 # Using the C++ library
@@ -388,6 +388,6 @@ hidden states to <state sequence output filename>.
 # Contact
 
 If you encounter any problems or have questions about using this
-software, please contact 
-
-	  Thomas Mailund : mailund@birc.au.dk.
+software, please post an issue here:
+	
+	  
