@@ -28,7 +28,9 @@ following commands in a terminal:
 	$ cd <path to library>/zipHMM-1.0.1/
 	$ cmake .
 ```
-2. If you're on Ubuntu or the following make gives an error about threading-related calls not being defined to link with, then do this first:
+2. 
+
+If you're on Ubuntu or the following make gives an error about threading-related calls not being defined to link with, then do this first:
 
 ```bash
 	$ grep -rl lpthread ./ | xargs sed -i 's/lpthread/pthread/g' 
@@ -389,5 +391,5 @@ hidden states to <state sequence output filename>.
 
 If you encounter any problems or have questions about using this
 software, please post an issue here:
-	
+	https://github.com/enjoysmath/ziphmm/issues	
 	  
