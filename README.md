@@ -1,3 +1,5 @@
+This library now builds its python parts using Python 3 (used the 2to3 utility to convert it).  I.e. all print "blah" statements were converted over to print("blah") and so on...
+
 
 * Build procedure
 * Getting started
@@ -30,6 +32,7 @@ You will run into some missing packages along the way, just keep googling and `a
 
 ```bash
 	$ cd <path to library>/zipHMM-1.0.1/
+	$ apt-get install python3 python3-dev
 	$ cmake .
 ```
 2. 
