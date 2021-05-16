@@ -21,6 +21,12 @@
 To build and install the library, unzip the directory and execute the
 following commands in a terminal:
 
+0. 
+If you're on Ubuntu, please follow the instructions here to install and build ATLAS:
+	
+	https://gist.github.com/sangheestyle/ca8ef7796aefadad8773
+	
+You will run into some missing packages along the way, just keep googling and `apt-get`ing until you're through.  Keep all default options if there are any.
 
 1. 
 
