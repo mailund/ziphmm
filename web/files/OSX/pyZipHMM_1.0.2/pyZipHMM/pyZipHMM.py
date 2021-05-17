@@ -1,3 +1,4 @@
+from __future__ import print_function
 from ctypes import *
 from distutils.sysconfig import get_python_lib
 from os import path
@@ -19,21 +20,22 @@ except OSError as e:
     
 
 ## HMM IO
-def readHMMspec(filename.encode('utf-8')):
+def readHMMspec(filename):
     nStates = c_uint()
     nObservables = c_uint()
-    lib.c_read_HMM_spec(byref(nStates), byref(nObservables), c_char_p(filename.encode('utf-8')))
+    
+    lib.c_read_HMM_spec(byref(nStates), byref(nObservables), c_char_p(filename if six.PY3 else filename))
     return (nStates, nObservables)
 
-def readHMM(filename.encode('utf-8')):
+def readHMM(filename):
     pi = Matrix()
     A = Matrix()
     B = Matrix()
-    lib.c_read_HMM(pi.obj, A.obj, B.obj, c_char_p(filename.encode('utf-8')))
+    lib.c_read_HMM(pi.obj, A.obj, B.obj, c_char_p(filename if six.PY3 else filename))
     return (pi, A, B)
 
 def writeHMM(pi, A, B, filename):
-    lib.c_write_HMM(pi.obj, A.obj, B.obj, c_char_p(filename.encode('utf-8')))
+    lib.c_write_HMM(pi.obj, A.obj, B.obj, c_char_p(filename if six.PY3 else filename))
     
 
 ## Forwarder
@@ -70,9 +72,9 @@ class Forwarder(object):
     def fromDirectory(directory, nStates = None):
         forwarder = Forwarder()
         if nStates == None:
-            lib.Forwarder_read_from_directory(forwarder.obj, c_char_p(directory))
+            lib.Forwarder_read_from_directory(forwarder.obj, c_char_p(directory.encode('utf8') if six.PY3 else directory))
         else:
-            lib.Forwarder_read_from_directory(forwarder.obj, c_char_p(directory), nStates)
+            lib.Forwarder_read_from_directory(forwarder.obj, c_char_p(directory.encode('utf8') if six.PY3 else directory), nStates)
         return forwarder
 
     def __del__(self):
@@ -111,7 +113,7 @@ class Forwarder(object):
         return lib.Forwarder_get_pair(self.obj, symbol)
          
     def writeToDirectory(self, directory):
-        lib.Forwarder_write_to_directory(self.obj, c_char_p(directory))
+        lib.Forwarder_write_to_directory(self.obj, c_char_p(directory.encode('utf8') if six.PY3 else directory))
 
 
 ## SimpleForwarder
@@ -158,9 +160,9 @@ class SimpleStopForwarder(object):
     def fromDirectory(directory, nStates = None):
         forwarder = Forwarder()
         if nStates == None:
-            lib.SimpleStopForwarder_read_from_directory(forwarder.obj, c_char_p(directory))
+            lib.SimpleStopForwarder_read_from_directory(forwarder.obj, c_char_p(directory.encode('utf8') if six.PY3 else directory))
         else:
-            lib.SimpleStopForwarder_new_from_directory(forwarder.obj, c_char_p(directory), nStates)
+            lib.SimpleStopForwarder_new_from_directory(forwarder.obj, c_char_p(directory.encode('utf8') if six.PY3 else directory), nStates)
         return forwarder
 
     def __del__(self):
@@ -199,7 +201,7 @@ class SimpleStopForwarder(object):
         return lib.SimpleStopForwarder_get_pair(self.obj, symbol)
          
     def writeToDirectory(self, directory):
-        lib.SimpleStopForwarder_write_to_directory(self.obj, c_char_p(directory))
+        lib.SimpleStopForwarder_write_to_directory(self.obj, c_char_p(directory.encode('utf8') if six.PY3 else directory))
 
 ## Sequence
 lib.Sequence_new.restype = c_void_p

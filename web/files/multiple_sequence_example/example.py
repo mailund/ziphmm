@@ -1,3 +1,4 @@
+from __future__ import print_function
 from pyZipHMM import *
 
 f = Forwarder.fromSequenceDirectory(dirname = "sequences", alphabetSize = 3, minNoEvals = 10)
