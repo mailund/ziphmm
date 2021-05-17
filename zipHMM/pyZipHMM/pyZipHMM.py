@@ -247,7 +247,7 @@ def calibrate(deviceFilename = None):
     if deviceFilename == None:
         lib.c_calibrate("-")
     else:
-        lib.c_calibrate(devicefilename if six.PY3 else filename)
+        lib.c_calibrate(deviceFilename if six.PY3 else deviceFilename)
 
 
 if __name__ == "__main__":
