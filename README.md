@@ -23,6 +23,7 @@ following commands in a terminal:
 
 ```bash
 $ cd <path to library>/zipHMM-1.0.1/
+pip install -r python_requirements.txt
 zipHMM-1.0.1 $ cmake .
 zipHMM-1.0.1 $ make
 zipHMM-1.0.1 $ bin/calibrate
@@ -72,7 +73,8 @@ or, alternatively, if you want to use Python 2 for something else as well, do:
 ```
 sudo apt-get install python python-dev
 ```
-2. `cd` to or open a terminal in the directory in which you'd like to store ZipHMM source code (this repository).
+2. `cd` to or open a terminal in the directory in which you'd like to store ZipHMM source code (this repository).  
+Do `pip install -r python_requirements.txt`.
 
 3.  Clone the repository using git:
 
