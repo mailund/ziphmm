@@ -55,7 +55,7 @@ parallelized algorithm and saves the number in a file (default is
 ~/.ziphmm.devices).
 
 # Ubuntu Procedure
-*(if the above does not work for you and your on Linux)*
+*(if the above does not work for you and you're on Linux)*
 
 1. Check if Python is installed:
 
