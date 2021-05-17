@@ -1,5 +1,3 @@
-This library now builds its python parts using Python 3 (used the 2to3 utility to convert it).  I.e. all print "blah" statements were converted over to print("blah") and so on...
-
 
 * Build procedure
 * Getting started
@@ -18,66 +16,25 @@ This library now builds its python parts using Python 3 (used the 2to3 utility t
 	* generate_seq
 * Contact
 
-# Build procedure: 
+# Build procedure
 
 To build and install the library, unzip the directory and execute the
 following commands in a terminal:
 
-0. 
-If you're on Ubuntu, please follow the instructions here to install and build ATLAS: https://gist.github.com/sangheestyle/ca8ef7796aefadad8773
-	
-You will run into some missing packages along the way, just keep googling and `apt-get`ing until you're through.  Keep all default options if there are any.
-
-1. 
-
 ```bash
-	$ cd <path to library>/zipHMM-1.0.1/
-	$ apt-get install python3 python3-dev
+$ cd <path to library>/zipHMM-1.0.1/
+zipHMM-1.0.1 $ cmake .
+zipHMM-1.0.1 $ make
+zipHMM-1.0.1 $ bin/calibrate
+zipHMM-1.0.1 $ make test
+zipHMM-1.0.1 $ make install
 ```
-Check python version with `python --version`.  If it's not 3, do:
-```bash
-update-alternatives --install /usr/bin/python python /usr/bin/python3 1
-```
-Now run `cmake .` from within the zipHMM-1.0.1/ directory.
-
-2. 
-
-If you're on Ubuntu or the following make gives an error about threading-related calls not being defined to link with, then do this first:
-
-```bash
-	$ grep -rl lpthread ./ | xargs sed -i 's/lpthread/pthread/g' 
-```
-This simply replaces all occrences of the flag "-lpthread" with "-pthread" and the build goes through after that!  It previously did not like the `l` in `-lpthread`.
-
-3. 
-
-```bash
-	$ make
-	$ bin/calibrate
-	$ make test
-	$ make install
-```
-
-A successful build (the first `make` command above) on Ubuntu server (running on a VirtualBox VM on Windows 10) with the slim desktop UI, should look like this:
-![VMBox instance of Unbuntu server with slim desktop and successful build of zipHMMlib.](https://user-images.githubusercontent.com/1606391/118394241-56572280-b5f8-11eb-9e9c-81683e6551b8.png)
-
-At the end, when you run `make install` you'll receive a print out of important locations (for useage of the library & headers), so save it to a file like so:
-
-```
-$ make install > important_install_directories.txt
-```
-
-Then you can refer back to it without having to run anything.
-
----
 
 To build in OS X, the Accellerate framework is required (see
 https://developer.apple.com/performance/accelerateframework.html). This
 is included in the developer tools installed with XCode (see
 https://developer.apple.com/xcode/)
 
-
----
 To build in Linux CMake must be able to find an installation of a BLAS
 implementation. For now the CMake script is set up to use Atlas and to
 look for it at /com/extra/ATLAS/3.9.84. This will most likely not work
@@ -96,6 +53,58 @@ bin/calibrate finds the optimal number of threads to use in the
 parallelized algorithm and saves the number in a file (default is
 ~/.ziphmm.devices).
 
+# Ubuntu Procedure
+*(if the above does not work for you and your on Linux)*
+
+1. Check if Python is installed:
+
+```
+which python
+```
+should return the location of the first Python insallation in your path environment variable.
+
+If not, then run:
+
+```
+sudo apt-get install python3 python3-dev
+```
+or, alternatively, if you want to use Python 2 for something else as well, do:
+```
+sudo apt-get install python python-dev
+```
+2. `cd` to or open a terminal in the directory in which you'd like to store ZipHMM source code (this repository).
+
+3.  Clone the repository using git:
+
+```
+git clone https://github.com/mailund/ziphmm.git
+```
+Then `cd` into the directory `ziphmm`.
+
+4. First make sure CMake is installed, do: `apt install cmake`.  Then run:
+```
+cmake .
+```
+That should return success for detecting your Python install, but not necessarily an R install.  If you'd like to use R with this library, then you'll have to install R first before building ZipHMM.
+
+5. From within that same directory try running `make`.  If it fails in regard to pthread calls not being found, then run:
+
+```
+grep -rl lpthread ./ | xargs sed -i 's/lpthread/pthread/g'
+```
+which simply replacess every occurence of the compiler flag `-lpthread` with `-pthread` in the ZipHMM makefiles.
+
+6. Now try running `make` again.  This is the main build step.
+
+7. If everything in step 6 built okay, then run these commands:
+
+```
+bin/calibrate
+make test
+```
+Make sure all tests have been passed.
+
+8.  Finally, install the library with `make install`.  Take note of the installation directories (`lib`, `include` etc) or run: `make install > important_install_directories.txt` to save them for later reference.
 
 # Getting started
 
@@ -103,10 +112,10 @@ Have a look at zipHMM/cpp_example.cpp and zipHMM/python_example.cpp
 and try running the following commands from the root directory.
 
 ```bash
-$ bin/cpp_example
+$ zipHMM-0.0.1 $ bin/cpp_example
 	
-$ cd zipHMM/
-$ python python_example.py
+$ zipHMM-0.0.1 $ cd zipHMM/
+$ zipHMM $ python python_example.py
 ```
 
 # Using the C++ library
@@ -402,13 +411,6 @@ hidden states to <state sequence output filename>.
 # Contact
 
 If you encounter any problems or have questions about using this
-software, please post an issue here:
-	https://github.com/enjoysmath/ziphmm/issues	
-	  
-	  
-# Origination / Inventor Contact Info
+software, please contact 
 
-This repository is a direct fork of the inventors' code repository: https://github.com/mailund/ziphmm
-
-On that page is contact information for them.
-
+	  Thomas Mailund : mailund@birc.au.dk.
