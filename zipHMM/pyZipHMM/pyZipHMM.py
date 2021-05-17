@@ -26,22 +26,22 @@ def readHMMspec(filename):
     nObservables = c_uint()
     if Py.PY3:
         filename = filename if six.PY3 else filename
-    lib.c_read_HMM_spec(byref(nStates), byref(nObservables), c_char_p(filename if six.PY3 else filename))
+    lib.c_read_HMM_spec(byref(nStates), byref(nObservables), c_char_p(filename.encode('utf-8') if six.PY3 else filename))
     return (nStates, nObservables)
 
 def readHMM(filename):
     pi = Matrix()
     A = Matrix()
     B = Matrix()
-    lib.c_read_HMM(pi.obj, A.obj, B.obj, c_char_p(filename if six.PY3 else filename))
+    lib.c_read_HMM(pi.obj, A.obj, B.obj, c_char_p(filename.encode('utf-8') if six.PY3 else filename))
     return (pi, A, B)
 
 def writeHMM(pi, A, B, filename):
-    lib.c_write_HMM(pi.obj, A.obj, B.obj, c_char_p(filename if six.PY3 else filename))
+    lib.c_write_HMM(pi.obj, A.obj, B.obj, c_char_p(filename.encode('utf-8') if six.PY3 else filename))
 
 lib.c_read_seq.restype = py_object
 def readSeq(filename):
-    return lib.c_read_seq(filename if six.PY3 else filename)
+    return lib.c_read_seq(filename.encode('utf-8') if six.PY3 else filename)
     
 ## Forwarder
 lib.Forwarder_new.restype = c_void_p

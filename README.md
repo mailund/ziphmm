@@ -90,7 +90,7 @@ That should return success for detecting your Python install, but not necessaril
 5. From within that same directory try running `make`.  If it fails in regard to pthread calls not being found, then run:
 
 ```
-grep -rl lpthread ./ | xargs sed -i 's/lpthread/pthread/g'
+grep -rl pthread ./ | xargs sed -i 's/lpthread/pthread/g'
 ```
 which simply replacess every occurence of the compiler flag `-lpthread` with `-pthread` in the ZipHMM makefiles.
 

@@ -63,10 +63,10 @@ class Forwarder(object):
         if nStatesSave != None:
             arr = ( c_uint * len(nStatesSave) )()
             arr[:] = nStatesSave
-            lib.Forwarder_read_seq(forwarder.obj, c_char_p(seqFilename), alphabetSize, arr, len(nStatesSave), minNoEvals)
+            lib.Forwarder_read_seq(forwarder.obj, c_char_p(seqFilename.encode('utf-8') if six.PY3 else seqFilename), alphabetSize, arr, len(nStatesSave), minNoEvals)
         else:
             arr = ( c_uint * 0 )()
-            lib.Forwarder_read_seq(forwarder.obj, c_char_p(seqFilename), alphabetSize, arr, 0, minNoEvals)
+            lib.Forwarder_read_seq(forwarder.obj, c_char_p(seqFilename.encode('utf-8') if six.PY3 else seqFilename), alphabetSize, arr, 0, minNoEvals)
         
         return forwarder
 
@@ -138,7 +138,7 @@ lib.SimpleForwarder_forward.restype = c_double
 
 class SimpleForwarder(object):
     def __init__(self, seqFilename):
-        self.obj = c_void_p(lib.SimpleForwarder_new(seqFilename))
+        self.obj = c_void_p(lib.SimpleForwarder_new(seqFilename.encode('utf-8') if six.PY3 else seqFilename))
 
     def forward(self, pi, A, B):
         return lib.SimpleForwarder_forward(self.obj, pi.obj, A.obj, B.obj)
@@ -228,7 +228,7 @@ class Matrix(object):
 def posteriorDecoding(seqFilename, pi, A, B):
     pdTable = Matrix()
     pdPath = Sequence()
-    lib.c_posterior_decoding(pdPath.obj, pdTable.obj, pi.obj, A.obj, B.obj, c_char_p(seqFilename))
+    lib.c_posterior_decoding(pdPath.obj, pdTable.obj, pi.obj, A.obj, B.obj, c_char_p(seqFilename.encode('utf-8') if six.PY3 else seqFilename))
     return pdPath, pdTable
 
 ## Viterbi
@@ -236,7 +236,7 @@ lib.c_viterbi.restype = c_double
 
 def viterbi(seqFilename, pi, A, B):
     viterbiPath = Sequence()
-    viterbi_ll = lib.c_viterbi(viterbiPath.obj, pi.obj, A.obj, B.obj, c_char_p(seqFilename))
+    viterbi_ll = lib.c_viterbi(viterbiPath.obj, pi.obj, A.obj, B.obj, c_char_p(seqFilename.encode('utf-8') if six.PY3 else seqFilename))
     return viterbiPath, viterbi_ll
         
 ## calibrate
