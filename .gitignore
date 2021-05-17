@@ -20,3 +20,6 @@ zipHMM/rZipHMM/librZipHMM.so
 zipHMM/rZipHMM/libzipHMM.so
 zipHMM/rZipHMM/src/librZipHMM.so
 zipHMM/rZipHMM/src/libzipHMM.so
+/zipHMM/pyZipHMM/__pycache__/*.pyc
+/*.wpr
+/*.wpu
