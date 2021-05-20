@@ -1,3 +1,4 @@
+from __future__ import print_function
 from ctypes import *
 from distutils.sysconfig import get_python_lib
 from os import path
@@ -11,10 +12,10 @@ except OSError:
     lib = cdll.LoadLibrary(python_lib + "/libpyZipHMM.so")
     library_location = python_lib + "/libpyZipHMM.so"
 except OSError as e:
-    print "Error: pyZipHMM not found:"
-    print "\t libpyZipHMM.so missing"
-    print "Looked at:", python_lib, '/libpyZipHMM.so and ./libpyZipHMM.so'
-    print "{0}: {1}".format(e.errno, e.strerror)
+    print("Error: pyZipHMM not found:")
+    print("\t libpyZipHMM.so missing")
+    print("Looked at:", python_lib, '/libpyZipHMM.so and ./libpyZipHMM.so')
+    print("{0}: {1}".format(e.errno, e.strerror))
     exit(-1)
     
 
@@ -22,18 +23,19 @@ except OSError as e:
 def readHMMspec(filename):
     nStates = c_uint()
     nObservables = c_uint()
-    lib.c_read_HMM_spec(byref(nStates), byref(nObservables), c_char_p(filename))
+    
+    lib.c_read_HMM_spec(byref(nStates), byref(nObservables), c_char_p(filename.encode('utf-8') if six.PY3 else filename))
     return (nStates, nObservables)
 
 def readHMM(filename):
     pi = Matrix()
     A = Matrix()
     B = Matrix()
-    lib.c_read_HMM(pi.obj, A.obj, B.obj, c_char_p(filename))
+    lib.c_read_HMM(pi.obj, A.obj, B.obj, c_char_p(filename.encode('utf-8') if six.PY3 else filename))
     return (pi, A, B)
 
 def writeHMM(pi, A, B, filename):
-    lib.c_write_HMM(pi.obj, A.obj, B.obj, c_char_p(filename))
+    lib.c_write_HMM(pi.obj, A.obj, B.obj, c_char_p(filename.encode('utf-8') if six.PY3 else filename))
     
 
 ## Forwarder
@@ -59,10 +61,10 @@ class Forwarder(object):
         if nStatesSave != None:
             arr = ( c_uint * len(nStatesSave) )()
             arr[:] = nStatesSave
-            lib.Forwarder_read_seq(forwarder.obj, c_char_p(seqFilename), alphabetSize, arr, len(nStatesSave), minNoEvals)
+            lib.Forwarder_read_seq(forwarder.obj, c_char_p(seqFilename.encode('utf-8') if six.PY3 else seqFilename), alphabetSize, arr, len(nStatesSave), minNoEvals)
         else:
             arr = ( c_uint * 0 )()
-            lib.Forwarder_read_seq(forwarder.obj, c_char_p(seqFilename), alphabetSize, arr, 0, minNoEvals)
+            lib.Forwarder_read_seq(forwarder.obj, c_char_p(seqFilename.encode('utf-8') if six.PY3 else seqFilename), alphabetSize, arr, 0, minNoEvals)
         
         return forwarder
 
@@ -70,9 +72,9 @@ class Forwarder(object):
     def fromDirectory(directory, nStates = None):
         forwarder = Forwarder()
         if nStates == None:
-            lib.Forwarder_read_from_directory(forwarder.obj, c_char_p(directory))
+            lib.Forwarder_read_from_directory(forwarder.obj, c_char_p(directory.encode('utf8') if six.PY3 else directory))
         else:
-            lib.Forwarder_read_from_directory(forwarder.obj, c_char_p(directory), nStates)
+            lib.Forwarder_read_from_directory(forwarder.obj, c_char_p(directory.encode('utf8') if six.PY3 else directory), nStates)
         return forwarder
 
     def __del__(self):
@@ -111,7 +113,7 @@ class Forwarder(object):
         return lib.Forwarder_get_pair(self.obj, symbol)
          
     def writeToDirectory(self, directory):
-        lib.Forwarder_write_to_directory(self.obj, c_char_p(directory))
+        lib.Forwarder_write_to_directory(self.obj, c_char_p(directory.encode('utf8') if six.PY3 else directory))
 
 
 ## SimpleForwarder
@@ -120,7 +122,7 @@ lib.SimpleForwarder_forward.restype = c_double
 
 class SimpleForwarder(object):
     def __init__(self, seqFilename):
-        self.obj = c_void_p(lib.SimpleForwarder_new(seqFilename))
+        self.obj = c_void_p(lib.SimpleForwarder_new(seqFilename.encode('utf-8') if six.PY3 else seqFilename))
 
     def forward(self, pi, A, B):
         return lib.SimpleForwarder_forward(self.obj, pi.obj, A.obj, B.obj)
@@ -147,10 +149,10 @@ class SimpleStopForwarder(object):
         if nStatesSave != None:
             arr = ( c_uint * len(nStatesSave) )()
             arr[:] = nStatesSave
-            lib.SimpleStopForwarder_read_seq(forwarder.obj, c_char_p(seqFilename), alphabetSize, arr, len(nStatesSave))
+            lib.SimpleStopForwarder_read_seq(forwarder.obj, c_char_p(seqFilename.encode('utf-8') if six.PY3 else seqFilename), alphabetSize, arr, len(nStatesSave))
         else:
             arr = ( c_uint * 0 )()
-            lib.SimpleStopForwarder_read_seq(forwarder.obj, c_char_p(seqFilename), alphabetSize, arr, 0)
+            lib.SimpleStopForwarder_read_seq(forwarder.obj, c_char_p(seqFilename.encode('utf-8') if six.PY3 else seqFilename), alphabetSize, arr, 0)
         
         return forwarder
     
@@ -158,9 +160,9 @@ class SimpleStopForwarder(object):
     def fromDirectory(directory, nStates = None):
         forwarder = Forwarder()
         if nStates == None:
-            lib.SimpleStopForwarder_read_from_directory(forwarder.obj, c_char_p(directory))
+            lib.SimpleStopForwarder_read_from_directory(forwarder.obj, c_char_p(directory.encode('utf8') if six.PY3 else directory))
         else:
-            lib.SimpleStopForwarder_new_from_directory(forwarder.obj, c_char_p(directory), nStates)
+            lib.SimpleStopForwarder_new_from_directory(forwarder.obj, c_char_p(directory.encode('utf8') if six.PY3 else directory), nStates)
         return forwarder
 
     def __del__(self):
@@ -199,7 +201,7 @@ class SimpleStopForwarder(object):
         return lib.SimpleStopForwarder_get_pair(self.obj, symbol)
          
     def writeToDirectory(self, directory):
-        lib.SimpleStopForwarder_write_to_directory(self.obj, c_char_p(directory))
+        lib.SimpleStopForwarder_write_to_directory(self.obj, c_char_p(directory.encode('utf8') if six.PY3 else directory))
 
 ## Sequence
 lib.Sequence_new.restype = c_void_p
@@ -222,19 +224,19 @@ class Sequence(object):
 
     def __getitem__(self, key):
         if isinstance(key, slice) :
-            return [ self[ii] for ii in xrange(*key.indices(len(self))) ]
+            return [ self[ii] for ii in range(*key.indices(len(self))) ]
         elif isinstance( key, int ) :
             if key < 0 :
                 key += len( self )
             if key >= len( self ) :
-                raise IndexError, "The index (%d) is out of range." % key
+                raise IndexError("The index (%d) is out of range." % key)
             return int(lib.Sequence_get(self.obj, key))
         else:
-            raise TypeError, "Invalid argument type."
+            raise TypeError("Invalid argument type.")
 
     def __str__(self):
         string = ""
-        for i in xrange(len(self)):
+        for i in range(len(self)):
             string = string + ("%d" % self[i]) + " "
         return string.strip()
         
@@ -267,10 +269,12 @@ class Matrix(object):
     def reset(self, height, width):
         lib.Matrix_reset(self.obj, c_uint(height), c_uint(width))
 
-    def __setitem__(self, (row, column), value):
+    def __setitem__(self, xxx_todo_changeme, value):
+        (row, column) = xxx_todo_changeme
         lib.Matrix_set(self.obj, c_uint(row), c_uint(column), c_double(value))
 
-    def __getitem__(self, (row, column)):
+    def __getitem__(self, xxx_todo_changeme1):
+        (row, column) = xxx_todo_changeme1
         return lib.Matrix_get(self.obj, row, column)
 
     @staticmethod
@@ -284,7 +288,7 @@ class Matrix(object):
 def posteriorDecoding(seqFilename, pi, A, B):
     pdTable = Matrix()
     pdPath = Sequence()
-    lib.c_posterior_decoding(pdPath.obj, pdTable.obj, pi.obj, A.obj, B.obj, c_char_p(seqFilename))
+    lib.c_posterior_decoding(pdPath.obj, pdTable.obj, pi.obj, A.obj, B.obj, c_char_p(seqFilename.encode('utf-8') if six.PY3 else seqFilename))
     return pdPath, pdTable
 
 ## Viterbi
@@ -292,7 +296,7 @@ lib.c_viterbi.restype = c_double
 
 def viterbi(seqFilename, pi, A, B):
     viterbiPath = Sequence()
-    viterbi_ll = lib.c_viterbi(viterbiPath.obj, pi.obj, A.obj, B.obj, c_char_p(seqFilename))
+    viterbi_ll = lib.c_viterbi(viterbiPath.obj, pi.obj, A.obj, B.obj, c_char_p(seqFilename.encode('utf-8') if six.PY3 else seqFilename))
     return viterbiPath, viterbi_ll
         
 ## calibrate
@@ -300,26 +304,26 @@ def calibrate(deviceFilename = None):
     if deviceFilename == None:
         lib.c_calibrate("-")
     else:
-        lib.c_calibrate(deviceFilename)
+        lib.c_calibrate(deviceFilename.encode('utf-8') if six.PY3 else deviceFilename)
 
 
 if __name__ == "__main__":
-    print "Constructing Matrix(3,7)"
+    print("Constructing Matrix(3,7)")
     m = Matrix(3, 7)
-    print "Calling getHeight()"
+    print("Calling getHeight()")
     assert m.getHeight() == 3
-    print "Calling getWidth()"
+    print("Calling getWidth()")
     assert m.getWidth() == 7
-    print "Calling setitem method"
+    print("Calling setitem method")
     m[1,2] = 0.5
-    print "Calling getitem method"
+    print("Calling getitem method")
     assert m[1, 2] == 0.5
-    print "Calling reset method"
+    print("Calling reset method")
     m.reset(7,3)
     assert m.getHeight() == 7
     assert m.getWidth() == 3
 
-    print "Calling readHMM method"
+    print("Calling readHMM method")
     (pi, A, B) = readHMM("test_data/test1.hmm")
     assert pi.getHeight() == 2
     assert pi.getWidth()  == 1
@@ -328,23 +332,23 @@ if __name__ == "__main__":
     assert B.getHeight()  == 2
     assert B.getWidth()   == 2
 
-    print "Creating Forwarder object from files"
+    print("Creating Forwarder object from files")
     f = Forwarder(newSeqFilename = "../new_seq.tmp", dataStructureFilename = "../data_structure.tmp")
     assert f.getOrigAlphabetSize() == 2
     assert f.getOrigSeqLength()    == 18
     assert f.getNewAlphabetSize()  == 4
-    print "Calling forward on Forwarder object"
+    print("Calling forward on Forwarder object")
     assert abs(f.forward(pi, A, B)  - -12.5671022728) < 0.001
 
-    print "Calling readHMMspec method"
+    print("Calling readHMMspec method")
     (nStates, nObservables) = readHMMspec("test_data/test1.hmm")
     assert nStates.value == 2
     assert nObservables.value == 2
 
-    print "Creating Forwarder from sequence and hmm spec"
+    print("Creating Forwarder from sequence and hmm spec")
     f = Forwarder(seqFilename = "test_data/test1.seq", nStates = nStates, nObservables = nObservables)
     assert f.getOrigAlphabetSize() == 2
     assert f.getOrigSeqLength()    == 18
     assert f.getNewAlphabetSize()  == 4
-    print "Calling forward"
+    print("Calling forward")
     assert abs(f.forward(pi, A, B) - -12.5671022728) < 0.001

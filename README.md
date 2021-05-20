@@ -16,13 +16,14 @@
 	* generate_seq
 * Contact
 
-# Build procedure: 
+# Build procedure
 
 To build and install the library, unzip the directory and execute the
 following commands in a terminal:
 
 ```bash
 $ cd <path to library>/zipHMM-1.0.1/
+pip install -r python_requirements.txt
 zipHMM-1.0.1 $ cmake .
 zipHMM-1.0.1 $ make
 zipHMM-1.0.1 $ bin/calibrate
@@ -53,6 +54,59 @@ bin/calibrate finds the optimal number of threads to use in the
 parallelized algorithm and saves the number in a file (default is
 ~/.ziphmm.devices).
 
+# Ubuntu Procedure
+*(if the above does not work for you and you're on Linux)*
+
+1. Check if Python is installed:
+
+```
+which python
+```
+should return the location of the first Python insallation in your path environment variable.
+
+If not, then run:
+
+```
+sudo apt-get install python3 python3-dev
+```
+or, alternatively, if you want to use Python 2 for something else as well, do:
+```
+sudo apt-get install python python-dev
+```
+2. `cd` to or open a terminal in the directory in which you'd like to store ZipHMM source code (this repository).  
+Do `pip install -r python_requirements.txt`.
+
+3.  Clone the repository using git:
+
+```
+git clone https://github.com/mailund/ziphmm.git
+```
+Then `cd` into the directory `ziphmm`.
+
+4. First make sure CMake is installed, do: `apt install cmake`.  Then run:
+```
+cmake .
+```
+That should return success for detecting your Python install, but not necessarily an R install.  If you'd like to use R with this library, then you'll have to install R first before building ZipHMM.
+
+5. From within that same directory try running `make`.  If it fails in regard to pthread calls not being found, then run:
+
+```
+grep -rl pthread ./ | xargs sed -i 's/lpthread/pthread/g'
+```
+which simply replacess every occurence of the compiler flag `-lpthread` with `-pthread` in the ZipHMM makefiles.
+
+6. Now try running `make` again.  This is the main build step.
+
+7. If everything in step 6 built okay, then run these commands:
+
+```
+bin/calibrate
+make test
+```
+Make sure all tests have been passed.
+
+8.  Finally, install the library with `make install`.  Take note of the installation directories (`lib`, `include` etc) or run: `make install > important_install_directories.txt` to save them for later reference.
 
 # Getting started
 

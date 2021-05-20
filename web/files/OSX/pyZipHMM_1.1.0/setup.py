@@ -1,3 +1,4 @@
+from __future__ import print_function
 from distutils.core import setup
 from distutils.command.build import build
 from platform import system
@@ -9,10 +10,10 @@ class calibrateRunner(build):
         """Calibrating pyZipHMM for multi-threaded applications"""
         from pyZipHMM.pyZipHMM import calibrate
 
-        print "Calibrating pyZipHMM for multi-threaded applications."
+        print("Calibrating pyZipHMM for multi-threaded applications.")
         filePath = expanduser("~") + "/.ziphmm.devices"
         calibrate(filePath)
-        print "Calibration saved to preference file: %s" % filePath
+        print("Calibration saved to preference file: %s" % filePath)
 
         build.run(self)
         
