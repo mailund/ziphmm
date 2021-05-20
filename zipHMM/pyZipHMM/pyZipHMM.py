@@ -3,10 +3,10 @@ from distutils.sysconfig import get_python_lib
 from os import path
 
 try:
-    d = path.dirname(__file__)
+    d = path.dirname(path.abspath(__file__))
     lib = cdll.LoadLibrary("%s/libpyZipHMM.so" % (d))
     library_location = "%s/libpyZipHMM.so" % (d)
-except OSError:
+except OSError as e:
     python_lib = get_python_lib()
     lib = cdll.LoadLibrary(python_lib + "/libpyZipHMM.so")
     library_location = python_lib + "/libpyZipHMM.so"
